@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Env & local secrets
+.env
+.env.local
+*.local
+
+# Server / runtime
+server/data/
+*.log
+
+# Build
+dist/
+dist-ssr/
+
+# OS & editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

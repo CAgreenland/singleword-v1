@@ -1,0 +1,259 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "HoomenX-inspired design system",
+  "version": "1.0.0",
+  "description": "High-level creative direction distilled from the reference: extreme minimalist dark editorial UI, typography-led hierarchy, pill geometry, and generous negative space. Use this file to replicate the same mood, structure, and component language across the Single word app.",
+
+  "design_principles": [
+    {
+      "principle": "Extreme minimalism",
+      "guidance": "Every element must earn its place. No ornamental chrome, no gratuitous gradients on UI chrome. Let black (or void) space do the work."
+    },
+    {
+      "principle": "High contrast first",
+      "guidance": "Primary surfaces are near-black or true black; primary text is white or off-white. Muted text is cool gray, never mid-gray on mid-gray."
+    },
+    {
+      "principle": "Typography as identity",
+      "guidance": "Pair a bold editorial serif for brand and hero moments with a neutral geometric sans for everything functional. Weight and size do the hierarchy, not boxes."
+    },
+    {
+      "principle": "Pill geometry",
+      "guidance": "Interactive controls (buttons, fields) use fully rounded ends—pill shapes—not soft rectangles. Keeps the UI feeling contemporary and calm."
+    },
+    {
+      "principle": "Generous negative space",
+      "guidance": "Large outer margins, airy line-height for body copy, and clear separation between regions (nav vs hero vs footer). Avoid dense stacking."
+    },
+    {
+      "principle": "Editorial balance",
+      "guidance": "Combine left-aligned reading blocks with right-aligned utility clusters (nav, secondary actions) to create tension and balance without clutter."
+    },
+    {
+      "principle": "Reader-specific: fixed focal point",
+      "guidance": "In RSVP / single-word reading views, the optical center letter (ORP) stays locked; only its accent colour may change—never the global type colour for the word body."
+    }
+  ],
+
+  "atmosphere": {
+    "keywords": ["minimal", "premium", "editorial", "dark-mode", "high-contrast", "calm", "confident"],
+    "avoid": ["skeuomorphism", "heavy shadows on chrome", "rainbow accents", "busy patterns on UI panels"]
+  },
+
+  "color": {
+    "mode": "dark",
+    "tokens": {
+      "background": {
+        "primary": "#000000",
+        "description": "True pitch black for main canvas and premium feel."
+      },
+      "background_alt": {
+        "value": "#0A0A0A",
+        "description": "Optional step for subtle depth (e.g. footer band) without breaking black-field minimalism."
+      },
+      "text": {
+        "primary": "#FFFFFF",
+        "secondary": "#CCCCCC",
+        "muted": "#A0A0A0",
+        "description": "Primary is pure white for headlines and critical labels; secondary for supporting sentences; muted for placeholders, hints, and tertiary links."
+      },
+      "border": {
+        "subtle": "rgba(255, 255, 255, 0.12)",
+        "default": "rgba(255, 255, 255, 0.22)",
+        "description": "Thin hairline strokes on dark. Prefer semi-transparent white over solid gray for elegance."
+      },
+      "accent": {
+        "primary_on_dark": {
+          "background": "#FFFFFF",
+          "foreground": "#000000",
+          "description": "Primary CTA: solid white fill, black text—inverts the page."
+        },
+        "secondary_on_dark": {
+          "background": "transparent",
+          "foreground": "#FFFFFF",
+          "border": "rgba(255, 255, 255, 0.9)",
+          "description": "Secondary CTA: outline pill, white label, no fill."
+        }
+      }
+    },
+    "reader_extensions": {
+      "starfield_background": {
+        "description": "Replace flat #000 with a deep space + subtle stars layer behind content; UI panels and the word row should feel blended (no heavy cards).",
+        "word_body": "#FFFFFF",
+        "word_body_alt": "#E8E8E8",
+        "pivot_accent": "user-chosen only; default indigo-violet family acceptable (e.g. #A5B4FC) against dark void"
+      }
+    }
+  },
+
+  "typography": {
+    "families": {
+      "brand_serif": {
+        "role": "Logo, hero headlines, editorial emphasis",
+        "character": "High-contrast serif; modern slab or bold Didone feel—authoritative, fashion/editorial.",
+        "fallback_stack": "Georgia, 'Times New Roman', serif"
+      },
+      "ui_sans": {
+        "role": "Body, navigation, labels, buttons, form text",
+        "character": "Clean geometric sans; neutral, highly legible on black.",
+        "fallback_stack": "'Inter', system-ui, -apple-system, sans-serif"
+      }
+    },
+    "scale": {
+      "brand_wordmark": { "approx": "clamp(2.5rem, 8vw, 5rem)", "weight": 700, "letter_spacing": "-0.02em" },
+      "hero_headline": { "approx": "clamp(2rem, 5vw, 3.5rem)", "weight": 700, "line_height": 1.08 },
+      "section_title": { "approx": "0.9375rem to 1rem", "weight": 600, "letter_spacing": "-0.02em" },
+      "body": { "approx": "1rem to 1.125rem", "weight": 400, "line_height": 1.55 },
+      "label_uppercase": { "approx": "0.75rem", "weight": 500, "letter_spacing": "0.06em", "text_transform": "uppercase" },
+      "caption": { "approx": "0.75rem", "weight": 400, "color_token": "text.muted" }
+    },
+    "rules": [
+      "Use serif sparingly—brand and hero only unless the screen is purely editorial.",
+      "Default UI chrome (nav, forms, reader controls) stays sans.",
+      "Do not mix more than two type families on one screen.",
+      "Reader word display: bold sans or controlled serif only if explicitly part of brand; size driven by slider, line-height tight (≈1) for ORP alignment."
+    ]
+  },
+
+  "spacing": {
+    "scale_rem": [4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96],
+    "layout": {
+      "page_max_width_px": 960,
+      "page_horizontal_padding": "clamp(20px, 4vw, 40px)",
+      "section_vertical_gap": "clamp(28px, 5vh, 48px)",
+      "nav_padding_block": "clamp(24px, 5vw, 48px)",
+      "footer_padding_block": "clamp(32px, 6vh, 56px)"
+    },
+    "principles": [
+      "Prefer fewer, larger gaps over many tight ones.",
+      "Hero and brand areas need the largest breathing room.",
+      "Keep form groups visually grouped; separate unrelated sections with dividers or space—not boxes."
+    ]
+  },
+
+  "radii_and_shape": {
+    "pill": "9999px or 999px",
+    "rule": "All primary buttons and text inputs use full pill geometry. Small icon-only controls may use perfect circles.",
+    "cards": "Avoid heavy cards on black; if needed, use hairline border + transparent fill, large radius (16px) at most—not default for this system."
+  },
+
+  "elevation_and_surface": {
+    "default": "Flat. Depth comes from contrast and space, not drop shadows on chrome.",
+    "exceptions": "Primary filled button may use a very soft shadow for lift; starfield reader may use minimal glow on focal letter only, not on panels."
+  },
+
+  "dividers": {
+    "style": "1px linear gradient: transparent → line → transparent (hairline, low opacity white).",
+    "usage": "Separate major sections without adding visual weight."
+  },
+
+  "components": {
+    "navigation_header": {
+      "structure": "Logo or wordmark left; primary nav links right; optional tertiary link (e.g. presentation) as uppercase muted label.",
+      "alignment": "space-between on one row",
+      "link_style": "No underline by default; hover lightens color to primary white",
+      "spacing": "Generous horizontal gap between nav items (e.g. 24–40px)"
+    },
+    "button_primary": {
+      "shape": "pill",
+      "background": "color.accent.primary_on_dark.background",
+      "text": "color.accent.primary_on_dark.foreground",
+      "padding": "12px 24px minimum",
+      "font": "ui_sans semibold",
+      "states": {
+        "hover": "Slightly off-white background (#F5F5F5) or subtle lift via shadow",
+        "disabled": "Reduced opacity (~0.35), no pointer"
+      }
+    },
+    "button_secondary": {
+      "shape": "pill",
+      "background": "transparent",
+      "border": "1px solid white or token border.default",
+      "text": "#FFFFFF",
+      "optional_icon": "Small inline icon (e.g. download) before or after label, same stroke weight as border",
+      "padding": "12px 24px"
+    },
+    "text_input": {
+      "shape": "pill",
+      "background": "transparent",
+      "border": "1px token border.default",
+      "text": "text.primary",
+      "placeholder": "text.muted",
+      "padding": "12px 16px",
+      "focus": "Thin light ring or border brightening—no thick outlines"
+    },
+    "textarea": {
+      "extends": "text_input",
+      "shape": "large radius (12–16px) if full pill is awkward; still soft, not sharp corners",
+      "min_height": "120px"
+    },
+    "file_input": {
+      "treatment": "Match textarea border language; muted label copy"
+    },
+    "footer": {
+      "layout": "Two or three columns on large screens; stacked on small",
+      "content": "Brand line, legal links, short utility line (e.g. keyboard hints)",
+      "text": "caption size, muted color",
+      "alignment": "space-between or split left/right for balance"
+    },
+    "social_icon_button": {
+      "shape": "circle",
+      "size": "40–44px",
+      "border": "1px white/low-opacity",
+      "background": "transparent",
+      "icon": "White glyph, centered"
+    },
+    "icon_button_utility": {
+      "example": "Back to top",
+      "shape": "circle",
+      "background": "dark gray fill (#333–#444)",
+      "icon": "white",
+      "description": "Subdued; not competing with primary CTAs"
+    },
+    "slider_range": {
+      "track": "Low contrast on dark",
+      "thumb_accent": "Match pivot accent or white",
+      "usage": "Speed, font size, progress"
+    },
+    "reader_word_block": {
+      "container": "No card; word sits on void or starfield",
+      "guide_lines": "Hairline horizontal rules equidistant above/below word band; centered on word row only (exclude hints)",
+      "pivot": "Only pivot uses accent colour; flanking segments use fixed white/off-white",
+      "alignment": "Three-column grid: equal side tracks, pivot column auto—keeps ORP on screen center"
+    }
+  },
+
+  "layout_patterns": {
+    "landing": {
+      "zones": ["nav", "hero", "divider", "feature_grid_optional", "footer"],
+      "hero": "Eyebrow (accent colour allowed) → headline → lead → primary + secondary CTAs",
+      "feature_grid": "Numbered labels (01, 02) in muted caps; short titles; muted body"
+    },
+    "reader_app": {
+      "zones": ["nav", "text_source", "reader_stage", "transport", "progress", "settings_minimal", "footer"],
+      "order": "Paste/upload first, then reading surface, then controls"
+    }
+  },
+
+  "motion": {
+    "principle": "Restrained. Short fades and 150–200ms ease on hover; no playful bounces on core reading UI.",
+    "respect_reduced_motion": true
+  },
+
+  "content_voice": {
+    "tone": "Calm, direct, premium—short labels, no exclamation clutter.",
+    "examples": {
+      "primary_cta": "Subscribe me",
+      "secondary": "Download PDF",
+      "nav": "About, Contact, Blog"
+    }
+  },
+
+  "ai_implementation_notes": [
+    "Map semantic tokens (background.primary, text.muted) in CSS :root; avoid hardcoding one-off hex except in this design.json.",
+    "When adding components, ask: would this survive on a black field with only type and a hairline? If not, simplify.",
+    "Reader view: never reintroduce global font colour pickers or background pickers; starfield + fixed light word colour + pivot accent only.",
+    "Use clamp() for responsive type and spacing to preserve editorial air on all viewports.",
+    "Reference image asset (if bundled): preserve HoomenX-like hierarchy: serif brand bottom-left energy, sans utility everywhere else."
+  ]
+}

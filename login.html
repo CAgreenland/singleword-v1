@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Sign in to Single word — preview." />
+    <title>Sign in — Single word</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./space-bg.css" />
+    <link rel="stylesheet" href="./landing.css" />
+    <link rel="stylesheet" href="./login.css" />
+    <link rel="stylesheet" href="./user-settings.css" />
+  </head>
+  <body class="landing-body">
+    <div class="space-bg" aria-hidden="true">
+      <div class="space-bg__glow"></div>
+      <div class="space-bg__galaxies"></div>
+      <div class="space-bg__stars space-bg__stars--far"></div>
+      <div class="space-bg__stars space-bg__stars--near"></div>
+    </div>
+    <div class="landing">
+      <div class="landing__inner">
+        <header class="landing__nav">
+          <a href="./index.html" class="landing__logo">Single word</a>
+          <a id="loginBackLink" class="landing__login-back" href="./index.html">← Previous page</a>
+        </header>
+
+        <main class="login-main">
+          <div class="login-card">
+            <h1 class="login-title">Sign in</h1>
+            <p class="login-lead">Preview sign-in — stored on this device only. After signing in you’ll go to the reader.</p>
+
+            <form id="loginForm" novalidate>
+              <div class="login-field">
+                <label class="login-label" for="loginEmail">Email</label>
+                <input
+                  id="loginEmail"
+                  class="login-input"
+                  type="email"
+                  name="email"
+                  autocomplete="username"
+                  inputmode="email"
+                  placeholder="you@example.com"
+                  required
+                />
+              </div>
+              <div class="login-field">
+                <label class="login-label" for="loginPassword">Password</label>
+                <input
+                  id="loginPassword"
+                  class="login-input"
+                  type="password"
+                  name="password"
+                  autocomplete="current-password"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+              <p id="loginStatus" class="login-status" role="status"></p>
+              <div class="login-actions">
+                <button id="loginSubmit" type="submit" class="login-submit">Sign in</button>
+                <button id="loginForgotBtn" type="button" class="login-forgot">Forgot password?</button>
+              </div>
+            </form>
+
+            <div id="loginAlreadySignedIn" class="login-lead" hidden style="margin-top: 8px">
+              <p style="margin: 0 0 16px">You’re already signed in on this device.</p>
+              <div class="login-actions">
+                <button type="button" class="login-submit" data-open-reader>Open reader</button>
+                <a class="landing__login-back" data-back-link href="./index.html">← Previous page</a>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <dialog id="forgotPasswordDialog" class="paywall-modal">
+      <form method="dialog" class="paywall-modal__card">
+        <p class="paywall-modal__kicker">Forgot password</p>
+        <h2 class="paywall-modal__title">Reset not available in this preview</h2>
+        <p class="paywall-modal__text">
+          This build stores sign-in state only on your device. When you add a backend, connect your auth provider’s reset
+          flow here.
+        </p>
+        <div class="paywall-modal__actions">
+          <button type="submit" class="login-submit login-submit--inline">Close</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="./user-settings.js" defer></script>
+    <script src="./login.js" defer></script>
+  </body>
+</html>

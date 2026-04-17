@@ -1,0 +1,246 @@
+/* Standalone sign-in page — matches landing + reader tokens */
+
+.login-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(16px, 4vw, 40px) 0 clamp(48px, 10vh, 96px);
+  animation: landing-fade-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 40ms;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  padding: clamp(24px, 5vw, 32px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(12, 12, 14, 0.85);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+}
+
+.login-title {
+  margin: 0 0 8px;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.5rem, 4vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.login-lead {
+  margin: 0 0 20px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.login-field {
+  margin-bottom: 14px;
+}
+
+.login-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.login-input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.login-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.login-input:focus {
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
+}
+
+.login-status {
+  margin: 0 0 14px;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.login-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.login-submit {
+  appearance: none;
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.96);
+  color: #14141f;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.login-submit:hover {
+  background: #fff;
+}
+
+.login-submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.login-forgot {
+  align-self: flex-start;
+  padding: 0;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #c8c8ff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.login-forgot:hover {
+  color: #e0e0ff;
+}
+
+.landing__login-back {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.75);
+  text-decoration: none;
+}
+
+.landing__login-back:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+html[data-theme="light"] .login-card {
+  border-color: rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="light"] .login-title {
+  color: #111;
+}
+
+html[data-theme="light"] .login-lead,
+html[data-theme="light"] .login-status {
+  color: #555;
+}
+
+html[data-theme="light"] .login-label {
+  color: #666;
+}
+
+html[data-theme="light"] .login-input {
+  border-color: rgba(0, 0, 0, 0.2);
+  background: #fff;
+  color: #111;
+}
+
+html[data-theme="light"] .login-input:focus {
+  border-color: rgba(0, 0, 0, 0.34);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+html[data-theme="light"] .landing__login-back {
+  color: #444;
+}
+
+html[data-theme="light"] .login-submit {
+  border-color: rgba(0, 0, 0, 0.22);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+}
+
+.login-submit--inline {
+  width: auto;
+  min-width: 120px;
+}
+
+/* Forgot-password dialog (no full styles.css dependency) */
+.paywall-modal {
+  width: min(92vw, 460px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  background: rgba(8, 8, 8, 0.96);
+  color: #fff;
+  padding: 0;
+}
+
+.paywall-modal::backdrop {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.paywall-modal__card {
+  margin: 0;
+  padding: 20px;
+}
+
+.paywall-modal__kicker {
+  margin: 0 0 8px;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.paywall-modal__title {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+}
+
+.paywall-modal__text {
+  margin: 0 0 14px;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.paywall-modal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+html[data-theme="light"] .paywall-modal {
+  background: rgba(255, 255, 255, 0.98);
+  color: #111;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+html[data-theme="light"] .paywall-modal__kicker {
+  color: #666;
+}
+
+html[data-theme="light"] .paywall-modal__text {
+  color: #444;
+}

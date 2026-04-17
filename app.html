@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Speed reading with one word at a time and a centered pivot letter." />
+    <title>Single word — Reader</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./space-bg.css" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./user-settings.css" />
+  </head>
+  <body>
+    <div class="space-bg" aria-hidden="true">
+      <div class="space-bg__glow"></div>
+      <div class="space-bg__galaxies"></div>
+      <div class="space-bg__stars space-bg__stars--far"></div>
+      <div class="space-bg__stars space-bg__stars--near"></div>
+    </div>
+
+    <div class="app">
+      <header class="nav">
+        <a class="nav__logo" href="./index.html">Single word</a>
+        <div class="nav__end">
+          <nav class="nav__links" aria-label="Site">
+            <a class="nav__link" href="./index.html">Home</a>
+            <a class="nav__link" id="navReturnLink" href="./index.html" hidden>← Previous page</a>
+          </nav>
+          <div class="user-menu" data-user-menu data-context="app">
+            <button
+              type="button"
+              class="user-menu__trigger"
+              id="userMenuBtnApp"
+              aria-expanded="false"
+              aria-haspopup="dialog"
+              aria-controls="userMenuPanelApp"
+            >
+              <span class="user-menu__trigger-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="8" r="3.5" />
+                  <path d="M5 20v-1a7 7 0 0 1 14 0v1" />
+                </svg>
+              </span>
+              Account
+            </button>
+            <div class="user-menu__panel" id="userMenuPanelApp" role="dialog" aria-label="Account and settings" hidden>
+              <div class="user-menu__section" data-user-plan-section hidden>
+                <h3 class="user-menu__heading">Your plan</h3>
+                <p class="user-menu__plan" data-user-plan></p>
+              </div>
+              <div id="userMenuSignInWrap" class="user-menu__section user-menu__section--signin">
+                <h3 id="userMenuAccountHeading" class="user-menu__heading">Sign in</h3>
+                <form id="accountSignInForm" class="user-menu__account-form" novalidate>
+                  <label class="user-menu__mini-label" for="accountEmail">Email</label>
+                  <input
+                    id="accountEmail"
+                    class="field__input user-menu__input"
+                    type="email"
+                    name="email"
+                    autocomplete="username"
+                    inputmode="email"
+                    placeholder="you@example.com"
+                  />
+                  <label class="user-menu__mini-label" for="accountPassword">Password</label>
+                  <input
+                    id="accountPassword"
+                    class="field__input user-menu__input"
+                    type="password"
+                    name="password"
+                    autocomplete="current-password"
+                    placeholder="••••••••"
+                  />
+                  <p id="settingsAccountStatus" class="user-menu__hint user-menu__hint--account">
+                    Not signed in — preview only; no server.
+                  </p>
+                  <div class="user-menu__signin-actions">
+                    <button id="settingsConnectBtn" type="submit" class="user-menu__btn user-menu__btn--signin">Sign in</button>
+                    <button id="accountForgotBtn" type="button" class="user-menu__forgot">Forgot password?</button>
+                  </div>
+                </form>
+                <div id="accountSignedIn" class="user-menu__signed-in" hidden>
+                  <p id="accountSignedInSummary" class="user-menu__hint"></p>
+                  <button id="accountSignOutBtn" type="button" class="user-menu__btn user-menu__btn--ghost">Sign out (preview)</button>
+                </div>
+              </div>
+              <div class="user-menu__section">
+                <h3 class="user-menu__heading">Appearance</h3>
+                <label class="user-menu__row">
+                  Mode
+                  <select class="user-menu__select" data-user-theme>
+                    <option value="dark">Dark</option>
+                    <option value="light">Light</option>
+                  </select>
+                </label>
+                <label class="user-menu__row">
+                  Background
+                  <select class="user-menu__select" data-user-bg>
+                    <optgroup label="Classic">
+                      <option value="space">Space</option>
+                      <option value="minimal">Minimal</option>
+                      <option value="paper">Paper</option>
+                    </optgroup>
+                    <optgroup label="Cosmic">
+                      <option value="midnight">Midnight</option>
+                      <option value="nebula">Nebula</option>
+                      <option value="aurora">Aurora</option>
+                      <option value="synthwave">Synthwave</option>
+                    </optgroup>
+                    <optgroup label="Nature">
+                      <option value="forest">Forest</option>
+                      <option value="meadow">Meadow</option>
+                      <option value="sakura">Sakura</option>
+                      <option value="ocean">Ocean</option>
+                      <option value="arctic">Arctic</option>
+                    </optgroup>
+                    <optgroup label="Warm">
+                      <option value="dusk">Dusk</option>
+                      <option value="sepia">Sepia</option>
+                      <option value="volcano">Volcano</option>
+                    </optgroup>
+                  </select>
+                </label>
+              </div>
+              <div class="user-menu__section" data-user-library-section hidden>
+                <h3 class="user-menu__heading">Saved books</h3>
+                <div class="user-menu__library" data-user-menu-library></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="main">
+        <!-- Reader stage — focal point of the app -->
+        <section class="reader-card" aria-label="Reader stage">
+          <div class="reader__stage">
+            <div class="reader__lines" aria-hidden="true">
+              <div class="reader__line reader__line--top"></div>
+              <div class="reader__line reader__line--bottom"></div>
+              <div class="reader__pivot-tick reader__pivot-tick--from-top"></div>
+              <div class="reader__pivot-tick reader__pivot-tick--from-bottom"></div>
+            </div>
+            <div class="reader__word" id="wordDisplay" aria-live="polite" aria-atomic="true">
+              <span class="reader__left" id="wordLeft"></span><span class="reader__pivot" id="wordPivot"></span><span class="reader__right" id="wordRight"></span>
+            </div>
+          </div>
+          <p class="reader__hint" id="hint">Load text to start reading.</p>
+
+          <div class="transport">
+            <button id="backBtn" class="transport__btn" type="button" aria-label="Back one word" disabled>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>
+            </button>
+            <button id="playPauseBtn" class="transport__btn transport__btn--play" type="button" aria-label="Play" disabled>
+              <svg id="playPauseIcon" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="9 6.5 17 12 9 17.5 9 6.5"/></svg>
+            </button>
+            <button id="nextBtn" class="transport__btn" type="button" aria-label="Forward one word" disabled>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>
+            </button>
+          </div>
+
+          <div class="progress">
+            <input id="progressBar" class="progress__range" type="range" min="0" max="1" step="1" value="0" />
+            <div class="progress__meta">
+              <span id="counter" class="progress__counter">0 / 0</span>
+            </div>
+            <div id="progressPaywall" class="progress__paywall" hidden>
+              <span class="progress__paywall-text">Free limit reached. Upgrade to continue reading.</span>
+              <button id="progressBuyBtn" type="button" class="cta cta--ghost progress__paywall-btn">Buy Single word</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Sidebar-style panels below -->
+        <div class="panels">
+          <!-- Source panel -->
+          <section class="panel" aria-label="Text source">
+            <header class="panel__header">
+              <h2 class="panel__title">Source</h2>
+              <p class="panel__subtitle">Paste to load instantly, or upload a file</p>
+            </header>
+            <div class="panel__body">
+              <div class="field">
+                <label class="field__label" for="textInput">Text</label>
+                <p class="field__hint field__hint--tight">
+                  Paste or type up to <strong>2,000 words</strong> in this box (testing limit). For longer texts choose a file
+                  below. The reader syncs shortly after you edit. Click a word to jump.
+                </p>
+                <div class="field__textarea-wrap">
+                  <div id="textMirror" class="field__mirror" aria-hidden="true"></div>
+                  <textarea
+                    id="textInput"
+                    class="field__textarea"
+                    rows="4"
+                    placeholder="Paste text here"
+                    spellcheck="false"
+                  ></textarea>
+                </div>
+              </div>
+
+              <div class="field">
+                <label class="field__label" for="fileInput">File upload</label>
+                <input id="fileInput" class="field__file" type="file" accept="*/*" />
+                <p class="field__hint">
+                  Choosing a file loads it immediately and saves it to <strong>Your library</strong>. Paid: large books load in
+                  full, using memory mode so the app stays fast.
+                </p>
+              </div>
+
+              <div class="panel__actions">
+                <button id="resetBtn" class="cta" type="button">Reset</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Library: saved uploads on this device -->
+          <section id="library-panel" class="panel" aria-label="Your library">
+            <header class="panel__header">
+              <h2 class="panel__title">Your library</h2>
+              <p class="panel__subtitle">
+                Each file you choose is saved on this device (your library) and stays in sync with Account → Saved books.
+              </p>
+            </header>
+            <div class="panel__body">
+              <div id="libraryPanelLocked" class="library-panel__locked" hidden>
+                <p class="field__hint library-panel__locked-text">
+                  Sign in from <strong>Account</strong> (top right) to see saved files and your plan (free or paid).
+                </p>
+              </div>
+              <div id="libraryPanelBody" class="library-panel__body">
+                <div id="libraryList" class="library-list" aria-live="polite"></div>
+                <p id="libraryEmpty" class="field__hint library-empty">
+                  No saved books yet. Choose a file above — it loads automatically and your place is saved in your library.
+                </p>
+                <div class="panel__actions panel__actions--library">
+                  <button id="clearLibraryBtn" type="button" class="cta cta--ghost">Clear saved files</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Settings panel -->
+          <section class="panel" aria-label="Settings">
+            <header class="panel__header">
+              <h2 class="panel__title">Reading settings</h2>
+              <p class="panel__subtitle">Speed, size, and pivot color</p>
+            </header>
+            <div class="panel__body">
+              <div class="setting">
+                <div class="setting__head">
+                  <label class="setting__label" for="wpmRange">Speed</label>
+                  <output id="wpmOut" class="setting__value" for="wpmRange">300 WPM</output>
+                </div>
+                <input id="wpmRange" class="setting__range setting__range--toon" type="range" min="100" max="1000" step="10" value="300" />
+              </div>
+
+              <div class="setting">
+                <div class="setting__head">
+                  <label class="setting__label" for="fontRange">Font size</label>
+                  <output id="fontOut" class="setting__value" for="fontRange">64px</output>
+                </div>
+                <input id="fontRange" class="setting__range setting__range--toon" type="range" min="32" max="120" step="2" value="64" />
+              </div>
+
+              <div class="setting">
+                <div class="setting__head">
+                  <label class="setting__label" for="pivotColor">Central letter</label>
+                  <output id="pivotColorHex" class="setting__value setting__value--mono" for="pivotColor">#FFFFFF</output>
+                </div>
+                <div class="pivot-pick">
+                  <input id="pivotColor" class="pivot-pick__input" type="color" value="#ffffff" />
+                </div>
+              </div>
+
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="foot">
+        <span class="foot__brand">Single word</span>
+        <span class="foot__shortcut"><kbd>Space</kbd> play / pause &middot; <kbd>&larr;</kbd> <kbd>&rarr;</kbd> step</span>
+      </footer>
+    </div>
+
+    <dialog id="forgotPasswordDialog" class="paywall-modal">
+      <form method="dialog" class="paywall-modal__card">
+        <p class="paywall-modal__kicker">Forgot password</p>
+        <h2 class="paywall-modal__title">Reset not available in this preview</h2>
+        <p class="paywall-modal__text">
+          This build stores sign-in state only on your device. A real app would send a reset link via your auth provider
+          (e.g. email magic link, OAuth, or a <code>/forgot-password</code> API). Hook that flow up when you connect a
+          backend.
+        </p>
+        <div class="paywall-modal__actions">
+          <button type="submit" class="cta">Close</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="limitModal" class="paywall-modal">
+      <form method="dialog" class="paywall-modal__card">
+        <p class="paywall-modal__kicker">Free limit reached</p>
+        <h2 id="limitTitle" class="paywall-modal__title">Sign in to continue</h2>
+        <p id="limitMessage" class="paywall-modal__text">
+          You used your free quota. Open Account (top right) and sign in with email and password (preview).
+        </p>
+        <div class="paywall-modal__actions">
+          <button id="limitPrimaryBtn" type="button" class="cta">Sign in</button>
+          <button type="submit" class="cta cta--ghost">Close</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.5.136/build/pdf.min.mjs" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"></script>
+    <script src="./app.js" defer></script>
+    <script src="./user-settings.js" defer></script>
+  </body>
+</html>
