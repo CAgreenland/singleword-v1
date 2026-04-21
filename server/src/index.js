@@ -207,7 +207,7 @@ app.use((_req, res) => {
   res.status(404).json({ error: "Not found" });
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Single Word API (test mode) — http://127.0.0.1:${PORT}`);
   console.log(`  GET  /api/health`);
   console.log(`  GET  /api/entitlement?email=…`);
@@ -216,4 +216,16 @@ app.listen(PORT, () => {
   if (WEBHOOK_SECRET) {
     console.log(`  POST /api/webhooks/lemonsqueezy (Lemon Squeezy enabled)`);
   }
+});
+
+server.on("error", (err) => {
+  if (err.code === "EADDRINUSE") {
+    console.error(
+      `\n[Single Word API] Port ${PORT} is already in use (EADDRINUSE).\n` +
+        `Close the other terminal running the API, or set a different PORT in server/.env\n`
+    );
+    // Exit 0 so `node --watch` does not respawn forever while the port stays taken.
+    process.exit(0);
+  }
+  throw err;
 });

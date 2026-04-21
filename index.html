@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./space-bg.css" />
@@ -28,7 +28,11 @@
     <div class="landing">
       <div class="landing__inner">
         <header class="landing__nav">
-          <span class="landing__logo">Single word</span>
+          <div class="landing__nav-brand">
+            <a href="./index.html" class="landing__lockup" aria-label="Single word home">
+              <span class="landing__logo">single word</span>
+            </a>
+          </div>
           <div class="landing__nav-end">
             <div class="user-menu" data-user-menu data-context="landing">
               <button
@@ -50,7 +54,9 @@
               <div class="user-menu__panel" id="userMenuPanelLanding" role="dialog" aria-label="Account and settings" hidden>
                 <div class="user-menu__section" data-user-plan-guest>
                   <p class="user-menu__hint">
-                    <strong>Sign in</strong> to see your plan (free or paid) and saved files. You can return here afterward.
+                    <strong>Sign in</strong> or
+                    <a class="user-menu__link" href="./login.html?return=index.html&amp;mode=signup">create an account</a>
+                    to see your plan (free or paid) and saved files. You can return here afterward.
                   </p>
                   <a class="user-menu__link" href="./login.html?return=index.html">Sign in →</a>
                 </div>
@@ -111,167 +117,176 @@
           </div>
         </header>
 
-        <main id="main-content">
-          <section class="landing__hero" aria-labelledby="hero-title">
-            <p class="landing__eyebrow">Minimal reader</p>
-            <h1 id="hero-title" class="landing__title">One word at a time—for calmer eyes and steadier attention.</h1>
-            <p class="landing__lead">
-              Single word shows a single fixation point on screen: no competing lines, no scrolling paragraphs fighting for
-              your focus. You set the pace, choose how large the text appears, and follow a highlighted centre letter so
-              reading feels intentional—whether you are studying, unwinding with a story, or helping a child stay on the
-              page.
-            </p>
-            <div class="landing__actions">
-              <a class="landing__cta" href="./app.html">Test single word</a>
-              <a class="landing__cta" href="./login.html">Sign in</a>
-              <span class="landing__cta-note">Free to test · account or payment after your free limit</span>
+        <main id="main-content" class="board">
+          <section class="board__hero" aria-labelledby="hero-title">
+            <h1 id="hero-title" class="board__wordmark">single&nbsp;word</h1>
+            <p class="board__tagline">One word at a time — for calmer eyes and steadier attention.</p>
+            <div class="board__cta-row">
+              <a class="landing__cta landing__cta--primary" href="./app.html">Test single word</a>
+              <a class="landing__cta landing__cta--outline" href="./login.html?return=index.html">Sign in</a>
             </div>
+            <p class="board__cta-note">Free to test — account or payment after your free limit.</p>
           </section>
 
-          <hr class="landing__divider" />
-
-          <section class="landing__section" aria-labelledby="why-title">
-            <div class="landing__section-head">
-              <p class="landing__section-kicker">Why word-by-word</p>
-              <h2 id="why-title" class="landing__section-title">Reading is easier when the page stops shouting at you</h2>
-            </div>
-            <div class="landing__prose">
-              <p>
-                On a normal page, your eyes jump between lines, margins, headings, and links. Each jump asks your brain
-                to decide what matters next.                 Word-by-word reading—sometimes called RSVP-style presentation—removes almost
-                everything that distracts. One word fills the stage. Your job is simple: recognise it, absorb it, and move on when
-                <em>you</em> are ready.
-              </p>
-              <p>
-                That simplicity is why many people describe single-word reading as less tiring: there is less visual
-                clutter to process before meaning even begins. You are not scanning; you are attending. Over time, that
-                rhythm can feel less like skimming and more like listening to the text speak at your chosen speed.
-              </p>
-            </div>
-          </section>
-
-          <section class="landing__section landing__section--accent" aria-labelledby="focus-title">
-            <div class="landing__section-head">
-              <p class="landing__section-kicker">Depth of focus</p>
-              <h2 id="focus-title" class="landing__section-title">When attention has only one place to land</h2>
-            </div>
-            <div class="landing__prose">
-              <p>
-                Deep focus is not only about willpower—it is about reducing the number of simultaneous demands on
-                attention. Single word gives you a single focal point: the word in front of you, with an optional central
-                letter anchor so your gaze has a predictable place to rest. Progress is visible and controllable, which
-                makes it easier to stay in the flow of the sentence without rereading the same line three times.
-              </p>
-              <p>
-                You can slow down for dense material or pick up speed for lighter text. The important part is that pace
-                and presentation stay under your control, so focus follows intention instead of whatever the layout
-                happened to emphasize.
-              </p>
-            </div>
-          </section>
-
-          <section class="landing__section" aria-labelledby="adhd-title">
-            <div class="landing__section-head">
-              <p class="landing__section-kicker">Attention &amp; ADHD</p>
-              <h2 id="adhd-title" class="landing__section-title">A gentler way to stay with long or difficult text</h2>
-            </div>
-            <div class="landing__prose">
-              <p>
-                People with ADHD often wrestle with distractibility, working-memory load, and the urge to jump ahead.
-                Traditional pages add extra decisions—where to look next, whether to scroll, how to track the line—on top
-                of understanding the words themselves. A minimal, one-word reader can reduce that overhead: fewer visual
-                hooks, a steady external pace, and less “where was I?” when you glance away.
-              </p>
-              <p>
-                Many adults and young readers find that kind of structure supportive. It does not replace professional
-                diagnosis or treatment, and it is not a medical device—but as a reading environment, it can make
-                sustained attention feel more achievable for homework, articles, or books that would otherwise feel
-                overwhelming.
-              </p>
-              <aside class="landing__disclaimer" role="note">
-                <strong>Plain note.</strong> Single word is a reading tool, not healthcare advice. If attention or
-                reading difficulties affect daily life, a qualified professional is the right place for assessment and
-                support.
-              </aside>
-            </div>
-          </section>
-
-          <section class="landing__section" aria-labelledby="audience-title">
-            <div class="landing__section-head">
-              <p class="landing__section-kicker">Kids &amp; adults</p>
-              <h2 id="audience-title" class="landing__section-title">Try it together—or on your own</h2>
-            </div>
-            <div class="landing__audience-grid">
-              <article class="landing__audience-card">
-                <h3 class="landing__audience-card-title">Younger readers</h3>
-                <p class="landing__audience-card-text">
-                  Large, clear type and one word at a time can help children practise decoding without the whole page
-                  staring back at them. Parents and teachers can sit beside the screen, pause to explain a word, and
-                  celebrate steady progress—without the visual overload of a dense paragraph.
+          <section class="board__grid" aria-label="Why single word">
+            <div class="board__row">
+            <!-- Tile 01 — One focal point -->
+            <article class="tile">
+              <header class="tile__meta">
+                <span class="tile__meta-left">single word</span>
+                <span class="tile__meta-right">FOCUS</span>
+              </header>
+              <div class="tile__text">
+                <h3 class="tile__title">One word. One fixation.</h3>
+                <p class="tile__body">
+                  Your eyes stop jumping between lines, margins, and headings. The next word appears on its own — exactly where you are already looking — so reading feels like following a single, steady target instead of scanning a whole page.
                 </p>
-              </article>
-              <article class="landing__audience-card">
-                <h3 class="landing__audience-card-title">Students &amp; professionals</h3>
-                <p class="landing__audience-card-text">
-                  Adults use single-word readers to get through reports, long-form journalism, and study material with
-                  fewer stray glances at notifications. You trade the “busy page” for a quiet cadence that respects how
-                  tired or wired you are on a given day.
+              </div>
+              <footer class="tile__foot">
+                <span>Minimal stage</span>
+                <span>FOCAL POINT</span>
+              </footer>
+            </article>
+
+            <!-- Tile 02 — Your rhythm -->
+            <article class="tile">
+              <header class="tile__meta">
+                <span class="tile__meta-left">RHYTHM</span>
+                <span class="tile__meta-right">WPM</span>
+              </header>
+              <div class="tile__text">
+                <h3 class="tile__title">Read at your pace.</h3>
+                <p class="tile__body">
+                  Slow down for dense material, speed up for lighter text. You set the cadence — the reader follows, word by word, without losing your place. Adjust words per minute anytime; the flow stays smooth and predictable.
                 </p>
-              </article>
+              </div>
+              <footer class="tile__foot">
+                <span>Your rhythm</span>
+                <span>SPEED</span>
+              </footer>
+            </article>
+
+            <!-- Tile 03 — Anchor letter -->
+            <article class="tile">
+              <header class="tile__meta">
+                <span class="tile__meta-left">PIVOT</span>
+              </header>
+              <div class="tile__text">
+                <h3 class="tile__title">A steady anchor letter.</h3>
+                <p class="tile__body">
+                  Each word has a highlighted centre letter so your gaze has a predictable place to land. That anchor stays in the same visual lane as words change — less darting around, more actual reading.
+                </p>
+              </div>
+              <footer class="tile__foot">
+                <span>Central anchor</span>
+                <span>PIVOT</span>
+              </footer>
+            </article>
+
+            <!-- Tile 04 — Calm reading surface (dark variant) -->
+            <article class="tile">
+              <header class="tile__meta">
+                <span class="tile__meta-left">CALM</span>
+                <span class="tile__meta-right">CORE</span>
+              </header>
+              <div class="tile__text">
+                <h3 class="tile__title">No competing lines.</h3>
+                <p class="tile__body">
+                  No scroll, no sidebars, no notifications asking for attention. Just the sentence you came to finish — one beat at a time. The stage stays quiet so your mind can stay on the words, not the chrome.
+                </p>
+              </div>
+              <footer class="tile__foot">
+                <span>Reader core</span>
+                <span>QUIET</span>
+              </footer>
+            </article>
+            </div>
+
+            <div class="board__row">
+            <!-- Tile 05 — Attention / ADHD -->
+            <article class="tile">
+              <header class="tile__meta">
+                <span class="tile__meta-left">ATTENTION</span>
+                <span class="tile__meta-right">ADHD FRIENDLY</span>
+              </header>
+              <div class="tile__text">
+                <h3 class="tile__title">Easier to stay with long text.</h3>
+                <p class="tile__body">
+                  A steady external pace lowers the “where was I?” moments on dense or difficult material, so attention follows intention — not the layout. Helpful for long articles, study sessions, and anyone who prefers a calmer, guided read.
+                </p>
+              </div>
+              <footer class="tile__foot">
+                <span>Made for focus</span>
+                <span>STEADY</span>
+              </footer>
+            </article>
+
+            <!-- Tile 06 — Bring any text -->
+            <article class="tile">
+              <header class="tile__meta">
+                <span class="tile__meta-left">SOURCE</span>
+                <span class="tile__meta-right tile__meta-right--natural">Use your own source</span>
+              </header>
+              <div class="tile__text">
+                <h3 class="tile__title">Paste or upload anything.</h3>
+                <p class="tile__body">
+                  Articles, study notes, chapters, plain paragraphs — the reader adapts to whatever you want to finish today, and picks up where you left off. Paste from the clipboard or open common formats so your source stays yours — no extra toolchain required.
+                </p>
+              </div>
+              <footer class="tile__foot">
+                <span>Any text</span>
+                <span>ANY TIME</span>
+              </footer>
+            </article>
+
+            <!-- Tile 07 — Library & resume -->
+            <article class="tile">
+              <header class="tile__meta">
+                <span class="tile__meta-left">LIBRARY</span>
+                <span class="tile__meta-right">RESUME</span>
+              </header>
+              <div class="tile__text">
+                <h3 class="tile__title">Your place, saved on this device.</h3>
+                <p class="tile__body">
+                  Uploads and (with a paid plan) pasted text can live in a simple library with your last position. Open the reader later and continue from the same word — no digging through tabs or PDFs to find where you stopped.
+                </p>
+              </div>
+              <footer class="tile__foot">
+                <span>Pick up again</span>
+                <span>SAVED</span>
+              </footer>
+            </article>
+
+            <!-- Tile 08 — Comfort & controls -->
+            <article class="tile">
+              <header class="tile__meta">
+                <span class="tile__meta-left">COMFORT</span>
+                <span class="tile__meta-right">CONTROLS</span>
+              </header>
+              <div class="tile__text">
+                <h3 class="tile__title">Dial in speed, size, and colour.</h3>
+                <p class="tile__body">
+                  Set reading speed, font size, and colours for the word and the centre letter. Keyboard shortcuts keep play, pause, and stepping under your fingers — so you can tune the look and feel for long sessions or quick passes.
+                </p>
+              </div>
+              <footer class="tile__foot">
+                <span>Your settings</span>
+                <span>TUNE IN</span>
+              </footer>
+            </article>
             </div>
           </section>
 
-          <hr class="landing__divider landing__divider--tight" />
-
-          <section class="landing__features" aria-label="What you get">
-            <div class="landing__section-head landing__section-head--features">
-              <p class="landing__section-kicker">In the app</p>
-              <h2 class="landing__section-title landing__section-title--sm">Designed for clarity, not distraction</h2>
+          <section class="board__lockup" aria-labelledby="cta-mid-title">
+            <div class="board__lockup-head">
+              <h2 id="cta-mid-title" class="board__lockup-title">single word</h2>
+              <p class="board__lockup-note">¿Are you ready to use single word?</p>
             </div>
-            <div class="landing__features-grid">
-              <article class="landing__feature">
-                <span class="landing__feature-num">01</span>
-                <h3 class="landing__feature-title">One focal point</h3>
-                <p class="landing__feature-text">
-                  Each word appears alone so your eyes stay on a single fixation. A highlighted centre letter gives a
-                  consistent anchor.
-                </p>
-              </article>
-              <article class="landing__feature">
-                <span class="landing__feature-num">02</span>
-                <h3 class="landing__feature-title">Your rhythm</h3>
-                <p class="landing__feature-text">
-                  Adjust speed, size, and colours to match how you want to read today—slow and careful, or brisk and
-                  light.
-                </p>
-              </article>
-              <article class="landing__feature">
-                <span class="landing__feature-num">03</span>
-                <h3 class="landing__feature-title">Bring your text</h3>
-                <p class="landing__feature-text">
-                  Paste from anywhere or load common file types when you are ready. Your content stays in the session
-                  you start.
-                </p>
-              </article>
-            </div>
-          </section>
-
-          <section class="landing__cta-block" aria-labelledby="cta-mid-title">
-            <p id="cta-mid-title" class="landing__cta-block-title">Ready to read with no distractions?</p>
-            <p class="landing__cta-block-text">
-              Open the reader, paste a paragraph you already know, and notice how different it feels when only one word
-              is on stage.
-            </p>
             <div class="landing__cta-pair">
-              <a class="landing__cta" href="./app.html">Test single word</a>
-              <a class="landing__cta" href="./login.html">Sign in</a>
+              <a class="landing__cta landing__cta--primary" href="./app.html">Test single word</a>
+              <a class="landing__cta landing__cta--outline" href="./login.html?return=index.html">Sign in</a>
             </div>
           </section>
-
-          <footer class="landing__footer">
-            <span>Single word · focused reading</span>
-            <a href="./app.html">Continue to app →</a>
-          </footer>
         </main>
       </div>
     </div>

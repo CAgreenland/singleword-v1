@@ -23,22 +23,25 @@ html {
 
 :root {
   --layout-max: 100%;
-  --canvas: #000000;
-  --text: #ffffff;
-  --text-secondary: #d4d4d4;
-  --text-muted: #8a8a8a;
-  --text-dim: #555555;
+  --neon: #4eff8a;
+  --neon-glow: rgba(78, 255, 138, 0.2);
+  --canvas: #050505;
+  --text: #e8fff0;
+  --text-secondary: #b8dcc4;
+  --text-muted: #6b9a7a;
+  --text-dim: #4a6b55;
 
-  --border: rgba(255, 255, 255, 0.1);
-  --border-strong: rgba(255, 255, 255, 0.18);
-  --surface: rgba(255, 255, 255, 0.035);
-  --surface-raised: rgba(255, 255, 255, 0.055);
-  --surface-hover: rgba(255, 255, 255, 0.08);
+  --border: rgba(78, 255, 138, 0.16);
+  --border-strong: rgba(78, 255, 138, 0.32);
+  --surface: rgba(12, 22, 16, 0.55);
+  --surface-raised: rgba(18, 32, 24, 0.72);
+  --surface-hover: rgba(24, 44, 32, 0.85);
 
-  --word-color: #b8b8b8;
-  --pivot-color: #ffffff;
+  --word-color: #9ad4a8;
+  --pivot-color: var(--neon);
 
-  --reader-font: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-ui: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --reader-font: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --reader-size: 64px;
   --reader-line-gap: calc(var(--reader-size) * 0.22);
   --reader-band-height: calc(var(--reader-size) + 2 * var(--reader-line-gap) + 2px);
@@ -69,12 +72,30 @@ html {
 body {
   margin: 0;
   min-height: 100dvh;
-  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  font-size: 14px;
-  line-height: 1.55;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.6;
   color: var(--text);
   background: var(--canvas);
   overflow-x: hidden;
+  /* Account menu — retro panel (reader) */
+  --user-menu-border: var(--border-strong);
+  --user-menu-bg: rgba(8, 18, 12, 0.78);
+  --user-menu-fg: var(--text);
+  --user-menu-bg-hover: rgba(20, 40, 28, 0.88);
+  --user-menu-border-hover: rgba(78, 255, 138, 0.45);
+  --user-menu-bg-open: rgba(20, 48, 32, 0.92);
+  --user-panel-border: var(--border-strong);
+  --user-panel-bg: rgba(6, 14, 10, 0.97);
+  --user-section-border: rgba(78, 255, 138, 0.12);
+  --user-heading: var(--text-dim);
+  --user-body: var(--text);
+  --user-muted: var(--text-muted);
+  --user-label: rgba(78, 255, 138, 0.55);
+  --user-input-border: var(--border);
+  --user-input-bg: rgba(0, 0, 0, 0.4);
+  --user-input-fg: var(--text);
+  --user-lib-item-bg: rgba(78, 255, 138, 0.06);
 }
 
 /* ── App shell ───────────────────────────────────────── */
@@ -193,25 +214,31 @@ body {
   width: 100%;
   max-width: none;
   margin: 0 auto;
-  padding: 20px clamp(16px, 4vw, 40px);
+  padding: clamp(14px, 2.2vh, 22px) clamp(16px, 4vw, 40px);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid var(--border);
   animation: main-enter var(--duration-slow) var(--ease-smooth) both;
 }
 
 .nav__logo {
-  font-family: "Playfair Display", Georgia, serif;
-  font-size: 2.5rem;
+  font-family: var(--reader-font);
+  font-size: clamp(1.8rem, 3.2vw, 2.5rem);
   font-weight: 700;
-  letter-spacing: -0.025em;
-  color: var(--text);
+  letter-spacing: -0.035em;
+  text-transform: lowercase;
+  color: var(--neon);
+  text-shadow: 0 0 24px var(--neon-glow);
   text-decoration: none;
-  transition: opacity var(--duration-fast) var(--ease-smooth);
+  transition:
+    opacity var(--duration-fast) var(--ease-smooth),
+    filter var(--duration-fast) var(--ease-smooth);
 }
 
 .nav__logo:hover {
-  opacity: 0.8;
+  opacity: 0.92;
+  filter: brightness(1.08);
 }
 
 .nav__links {
@@ -236,12 +263,13 @@ body {
 .reader-card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: clamp(28px, 4vw, 48px) clamp(20px, 3vw, 36px);
+  border-radius: 24px;
+  padding: clamp(20px, 3vw, 32px) clamp(20px, 3vw, 36px) clamp(16px, 2.4vw, 24px);
   box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
+  gap: clamp(14px, 2vh, 22px);
   transition:
     box-shadow var(--duration-normal) var(--ease-smooth),
     border-color var(--duration-normal) var(--ease-smooth);
@@ -250,6 +278,74 @@ body {
 .reader-card:hover {
   border-color: var(--border-strong);
   box-shadow: var(--shadow-card-hover);
+}
+
+.reader-card .reader__stage,
+.reader-card .reader__hint,
+.reader-card .transport,
+.reader-card .progress {
+  align-self: center;
+  width: 100%;
+}
+
+.reader-card .progress {
+  max-width: 400px;
+}
+
+/* ── Brand-board meta rows (shared with landing tile language) ─── */
+
+.board-tile {
+  position: relative;
+}
+
+.board-tile--dark {
+  background: rgba(10, 18, 12, 0.72);
+  border: 1px solid var(--border-strong);
+  box-shadow:
+    inset 0 0 0 1px rgba(5, 7, 5, 0.4),
+    0 20px 48px -30px rgba(109, 232, 149, 0.2),
+    0 10px 28px -20px rgba(0, 0, 0, 0.85);
+}
+
+.board-tile--dark:hover {
+  border-color: rgba(109, 232, 149, 0.55);
+}
+
+.board-tile__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--neon);
+  margin-bottom: clamp(10px, 1.6vh, 16px);
+}
+
+.board-tile__meta-left,
+.board-tile__meta-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1.25;
+  color: var(--neon);
+}
+
+.board-tile__meta-right {
+  color: rgba(109, 232, 149, 0.75);
+}
+
+/* Panel as board-tile */
+.panel.board-tile {
+  border-radius: 24px;
+}
+
+.panel.board-tile .board-tile__meta {
+  padding: 16px clamp(20px, 3vw, 28px) 4px;
+  margin-bottom: 0;
 }
 
 .reader__stage {
@@ -589,7 +685,7 @@ body {
 
 /* Source + Settings body copy size */
 .panels .panel__title {
-  font-size: calc(0.875rem * var(--panel-type-scale));
+  font-size: calc(1.25rem * var(--panel-type-scale));
 }
 
 .panels .panel__subtitle {
@@ -643,14 +739,25 @@ body {
 }
 
 .panel__header {
-  padding: 20px 24px 0;
+  padding: 14px 24px 0;
+}
+
+.panel__kicker {
+  margin: 0 0 6px;
+  font-family: var(--font-ui);
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
 }
 
 .panel__title {
   margin: 0;
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-family: var(--reader-font);
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
   color: var(--text);
 }
 
@@ -884,14 +991,14 @@ body {
 }
 
 .field__textarea.field__textarea--corpusBuffer {
-  color: var(--text-secondary);
+  color: var(--text);
   cursor: default;
   resize: none;
 }
 
 .field__mirror-summary {
   margin: 0;
-  color: var(--text-muted);
+  color: var(--text);
   font-size: 0.8125rem;
   line-height: 1.55;
   white-space: normal;
@@ -925,7 +1032,8 @@ body {
   pointer-events: auto;
   padding: 10px 14px;
   border-radius: calc(var(--radius-md) - 1px);
-  color: var(--text-secondary);
+  /* Match primary UI text — pasted content was too faint on --text-secondary */
+  color: var(--text);
   font-family: inherit;
   font-size: 0.8125rem;
   line-height: 1.55;
@@ -1012,8 +1120,9 @@ body {
 }
 
 .setting__value--mono {
-  font-family: ui-monospace, "Cascadia Code", "Segoe UI Mono", monospace;
-  letter-spacing: 0.04em;
+  font-family: var(--font-ui);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
   user-select: all;
 }
 
@@ -1134,15 +1243,18 @@ body {
   justify-content: center;
   padding: 9px 20px;
   font-family: inherit;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: -0.005em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   color: var(--canvas);
-  background: var(--text);
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  background: var(--neon);
+  border: 1px solid var(--neon);
+  border-radius: var(--radius-pill);
   cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.35),
+    0 4px 20px -6px var(--neon-glow);
   transition:
     background var(--duration-fast) var(--ease-smooth),
     border-color var(--duration-fast) var(--ease-smooth),
@@ -1152,8 +1264,9 @@ body {
 }
 
 .cta:hover {
-  background: #ebebeb;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  background: #6effa3;
+  border-color: #6effa3;
+  box-shadow: 0 2px 12px -4px rgba(78, 255, 138, 0.45);
   transform: translateY(-1px);
 }
 
@@ -1162,7 +1275,7 @@ body {
 }
 
 .cta:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline: 2px solid var(--neon);
   outline-offset: 2px;
 }
 
@@ -1221,8 +1334,12 @@ html[data-theme="light"] .paywall-modal__text code {
 }
 
 .foot__brand {
-  font-weight: 500;
-  color: var(--text-muted);
+  font-family: var(--reader-font);
+  font-weight: 600;
+  text-transform: lowercase;
+  letter-spacing: -0.02em;
+  color: var(--neon);
+  opacity: 0.85;
 }
 
 .foot__shortcut kbd {
@@ -1315,4 +1432,40 @@ html[data-theme="light"] .paywall-modal__text code {
   .panel__header {
     padding: 16px 16px 0;
   }
+}
+
+/* Reader only: match landing retro-tech backdrop (login uses .landing-body rules in landing.css) */
+body:not(.landing-body) .space-bg__glow {
+  background:
+    radial-gradient(ellipse 120% 70% at 50% -5%, rgba(30, 90, 55, 0.35) 0%, transparent 55%),
+    radial-gradient(ellipse 55% 45% at 95% 95%, rgba(20, 70, 45, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse 45% 40% at 8% 85%, rgba(25, 60, 40, 0.18) 0%, transparent 48%);
+}
+
+body:not(.landing-body) .space-bg__galaxies {
+  opacity: 0.35;
+  filter: blur(36px) hue-rotate(75deg) saturate(0.85);
+}
+
+body:not(.landing-body) .space-bg__stars--far {
+  opacity: 0.38;
+  filter: hue-rotate(95deg) saturate(0.5) brightness(1.1);
+}
+
+body:not(.landing-body) .space-bg__stars--near {
+  opacity: 0.35;
+  filter: hue-rotate(90deg) saturate(0.55);
+}
+
+body:not(.landing-body) .space-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    rgba(5, 8, 6, 0.88) 0%,
+    transparent 35%,
+    transparent 65%,
+    rgba(5, 5, 5, 0.92) 100%
+  );
 }

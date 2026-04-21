@@ -280,6 +280,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const limitTitle = byId("limitTitle");
   const limitMessage = byId("limitMessage");
   const limitPrimaryBtn = byId("limitPrimaryBtn");
+  const limitSignUpBtn = byId("limitSignUpBtn");
 
   const wpmRange = byId("wpmRange");
   const wpmOut = byId("wpmOut");
@@ -316,9 +317,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let timerId = null;
   let preferredSource = "paste";
   let canFollowPaste = false;
-  const FREE_WORD_LIMIT = 500;
-  /** Hard cap on words in the Source textarea when pasting/typing (testing); longer text uses file upload. */
-  const PASTE_PANEL_MAX_WORDS = 2000;
+  const FREE_WORD_LIMIT = 1000;
+  /** Max words in the Source box per paste/session chunk; same cap for free-tier single load. */
+  const PASTE_PANEL_MAX_WORDS = 1000;
   let wordsUsed = Number(localStorage.getItem("singlewordWordsUsed") || "0");
   let hasConnectedAccount = localStorage.getItem("singlewordConnectedAccount") === "1";
   let hasPaid = localStorage.getItem("singlewordPaid") === "1";
@@ -326,7 +327,9 @@ document.addEventListener("DOMContentLoaded", () => {
   /** Token count after last successful textarea sync (for free-tier delta, not double-counting edits). */
   let lastCommittedTokenCount = 0;
   let textareaSyncTimer = null;
-  /** IndexedDB book id (fingerprint) for progress + library list. */
+  /** Debounced IndexedDB write for paid paste → Your library. */
+  let paidPasteLibraryTimer = null;
+  /** IndexedDB book id (fingerprint for files, fixed id for paste) for progress + library list. */
   let activeBookId = null;
   let progressSaveTimer = null;
 
@@ -344,6 +347,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const LARGE_CORPUS_BUFFER_WORDS = 45_000;
   /** Use incremental indexing so the tab doesn’t freeze on long books. */
   const ASYNC_TOKENIZE_MIN_CHARS = 35_000;
+  /** Max length for a library item title (paste or upload). */
+  const LIBRARY_TITLE_MAX = 120;
+  /** Single library row for Source paste (paid); content updates in place — not content-hash ids. */
+  const PASTE_LIBRARY_BOOK_ID = "singleword-paste-document";
+
+  /**
+   * Max word tokens allowed in the Source textarea right now.
+   * Paid: panel chunk size only. Free: cannot exceed lifetime free quota (FREE_WORD_LIMIT vs wordsUsed).
+   */
+  function getPasteWordHardCap() {
+    if (hasPaid || useFileCorpusBuffer) return PASTE_PANEL_MAX_WORDS;
+    return Math.min(
+      PASTE_PANEL_MAX_WORDS,
+      Math.max(0, FREE_WORD_LIMIT - wordsUsed + lastCommittedTokenCount)
+    );
+  }
 
   function getCorpusText() {
     return useFileCorpusBuffer && fileCorpusText ? fileCorpusText : String(textInput.value || "");
@@ -359,11 +378,17 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("singlewordPaid", hasPaid ? "1" : "0");
   }
 
+  /** Free tier: no playback or scrubbing once quota is hit (paid users exempt). */
+  function isFreeTierLocked() {
+    return !hasPaid && (wordsUsed >= FREE_WORD_LIMIT || freeLimitBlocked);
+  }
+
   function updateLimitGateUi() {
     if (!hasConnectedAccount) {
       limitTitle.textContent = "Sign in to continue";
-      limitMessage.textContent = `You reached the free limit (${FREE_WORD_LIMIT.toLocaleString()} words). Open Account (top right) and sign in with email and password (preview).`;
+      limitMessage.textContent = `You reached the free limit (${FREE_WORD_LIMIT.toLocaleString()} words). Open Account (top right) to sign in, or use Create account if you’re new (preview — email and password on this device).`;
       limitPrimaryBtn.textContent = "Sign in";
+      if (limitSignUpBtn) limitSignUpBtn.hidden = false;
       return;
     }
 
@@ -371,12 +396,14 @@ document.addEventListener("DOMContentLoaded", () => {
       limitTitle.textContent = "Activate paid plan";
       limitMessage.textContent = "Account connected. Complete payment to keep using Single word.";
       limitPrimaryBtn.textContent = "Pay now";
+      if (limitSignUpBtn) limitSignUpBtn.hidden = true;
       return;
     }
 
     limitTitle.textContent = "Plan active";
     limitMessage.textContent = "You now have paid access.";
     limitPrimaryBtn.textContent = "Continue";
+    if (limitSignUpBtn) limitSignUpBtn.hidden = true;
   }
 
   function openLimitModal() {
@@ -475,9 +502,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function setButtonsEnabled(enabled) {
-    backBtn.disabled = !enabled;
-    playPauseBtn.disabled = !enabled;
-    nextBtn.disabled = !enabled;
+    const locked = isFreeTierLocked();
+    const ok = enabled && !locked;
+    backBtn.disabled = !ok;
+    playPauseBtn.disabled = !ok;
+    nextBtn.disabled = !ok;
+    progressBar.disabled = locked || !words.length || words.length <= 1;
   }
 
   function updateCounterAndProgress() {
@@ -503,6 +533,8 @@ document.addEventListener("DOMContentLoaded", () => {
   function updateProgressPaywallUi() {
     const reachedFreeLimit = !hasPaid && (wordsUsed >= FREE_WORD_LIMIT || freeLimitBlocked);
     progressPaywall.hidden = !reachedFreeLimit;
+    if (reachedFreeLimit) pause();
+    setButtonsEnabled(words.length > 0);
   }
 
   function renderCurrentWord() {
@@ -549,6 +581,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function step(delta) {
     if (!words.length) return;
+    if (isFreeTierLocked()) return;
     index = clamp(index + delta, 0, words.length - 1);
     renderCurrentWord();
   }
@@ -559,6 +592,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function tick() {
     if (!isPlaying) return;
+    if (isFreeTierLocked()) {
+      pause();
+      return;
+    }
     if (atEnd()) {
       pause();
       return;
@@ -574,6 +611,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function play() {
     if (!words.length) return;
+    if (isFreeTierLocked()) return;
     if (atEnd()) {
       index = 0;
       renderCurrentWord();
@@ -585,6 +623,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function togglePlayPause() {
     if (!words.length) return;
+    if (isFreeTierLocked()) return;
     if (isPlaying) pause();
     else play();
   }
@@ -662,6 +701,64 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  function cancelPaidPasteLibraryTimer() {
+    if (paidPasteLibraryTimer != null) {
+      clearTimeout(paidPasteLibraryTimer);
+      paidPasteLibraryTimer = null;
+    }
+  }
+
+  function schedulePersistPaidPasteToLibrary() {
+    if (!hasPaid || useFileCorpusBuffer || preferredSource !== "paste") return;
+    cancelPaidPasteLibraryTimer();
+    paidPasteLibraryTimer = setTimeout(() => {
+      paidPasteLibraryTimer = null;
+      void persistPaidPasteToLibraryNow();
+    }, 550);
+  }
+
+  /** One library row for paid paste; always upserts `PASTE_LIBRARY_BOOK_ID`. */
+  async function persistPaidPasteToLibraryNow() {
+    if (!hasPaid || useFileCorpusBuffer || preferredSource !== "paste") return;
+    const norm = normalizeText(textInput.value);
+    if (!norm.trim() || !words.length) {
+      activeBookId = null;
+      try {
+        await idbDeleteBook(PASTE_LIBRARY_BOOK_ID);
+      } catch (_) {
+        /* ignore */
+      }
+      await renderLibrary().catch(() => {});
+      return;
+    }
+
+    let prev = null;
+    try {
+      prev = await idbGetBook(PASTE_LIBRARY_BOOK_ID);
+    } catch (_) {
+      /* ignore */
+    }
+    const titleRaw =
+      (prev && typeof prev.filename === "string" && prev.filename.trim() && prev.filename) || "Pasted text";
+    const title = String(titleRaw).trim().slice(0, LIBRARY_TITLE_MAX);
+
+    activeBookId = PASTE_LIBRARY_BOOK_ID;
+    try {
+      await idbPutBook({
+        id: PASTE_LIBRARY_BOOK_ID,
+        filename: title,
+        text: norm,
+        wordCount: words.length,
+        savedIndex: index,
+        updatedAt: Date.now(),
+      });
+      await pruneOldBooks(PASTE_LIBRARY_BOOK_ID);
+      await renderLibrary();
+    } catch (_) {
+      /* ignore */
+    }
+  }
+
   function scheduleTextareaSync() {
     cancelTextareaSync();
     textareaSyncTimer = setTimeout(() => {
@@ -673,6 +770,9 @@ document.addEventListener("DOMContentLoaded", () => {
   /** Truncate raw textarea string to first `maxWords` whitespace-separated tokens (indices use original string). */
   function trimTextareaToMaxWords(raw, maxWords) {
     const parsed = tokenizeWithPositionsRaw(raw);
+    if (maxWords <= 0) {
+      return { text: "", didTrim: parsed.tokens.length > 0 };
+    }
     if (parsed.tokens.length <= maxWords) return { text: raw, didTrim: false };
     const last = parsed.tokens[maxWords - 1];
     return { text: raw.slice(0, last.end), didTrim: true };
@@ -771,7 +871,7 @@ document.addEventListener("DOMContentLoaded", () => {
         accountSignedIn.hidden = true;
         if (settingsAccountStatus) {
           settingsAccountStatus.textContent =
-            "Not signed in — enter email and password, then Sign in. Preview only; no server.";
+            "Not signed in — use Sign in or Create account (opens full page). Preview only; no server.";
         }
       }
     }
@@ -787,7 +887,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     openAccountMenuAndFocusSignIn();
-    hint.textContent = "Enter email and password in the Account menu, then Sign in (preview).";
+    hint.textContent =
+      "Enter email and password here, or open Create account in the same menu (preview).";
   }
 
   function closeAccountMenuIfOpen() {
@@ -810,48 +911,92 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /**
    * Keep tokens, mirror, and reader in sync with the textarea on every edit (caret, delete, paste behave normally).
+   * Paid + paste: tokenize normalized text so IndexedDB matches library resume; free users keep raw positions.
    */
   function syncPasteFromTextareaImmediate() {
     if (useFileCorpusBuffer) return;
-    activeBookId = null;
+    if (!hasPaid) {
+      activeBookId = null;
+    }
     pause();
 
-    if (preferredSource === "paste") {
-      const trimmed = trimTextareaToMaxWords(textInput.value, PASTE_PANEL_MAX_WORDS);
-      if (trimmed.didTrim) {
+    if (preferredSource === "paste" && !useFileCorpusBuffer) {
+      const cap = getPasteWordHardCap();
+      const trimmed = trimTextareaToMaxWords(textInput.value, cap);
+      if (trimmed.didTrim || textInput.value !== trimmed.text) {
         textInput.value = trimmed.text;
-        hint.textContent = `The Source box is limited to ${PASTE_PANEL_MAX_WORDS.toLocaleString()} words while testing. Extra words were removed.`;
+        if (!hasPaid && cap < PASTE_PANEL_MAX_WORDS) {
+          hint.textContent = `Free plan: you’ve used your ${FREE_WORD_LIMIT.toLocaleString()} words in the Source box. Remove text or upgrade to paste more.`;
+        } else {
+          hint.textContent = `The Source box is limited to ${PASTE_PANEL_MAX_WORDS.toLocaleString()} words at a time. Extra words were removed.`;
+        }
       }
     }
 
-    const parsed = tokenizeWithPositionsRaw(textInput.value);
-    tokens = parsed.tokens;
-    words = tokens.map((t) => t.word);
+    let parsed;
+    if (hasPaid && preferredSource === "paste") {
+      parsed = tokenizeWithPositions(textInput.value);
+      tokens = parsed.tokens;
+      words = tokens.map((t) => t.word);
+      if (parsed.normalized && textInput.value !== parsed.normalized) {
+        textInput.value = parsed.normalized;
+      }
+    } else {
+      parsed = tokenizeWithPositionsRaw(textInput.value);
+      tokens = parsed.tokens;
+      words = tokens.map((t) => t.word);
+    }
+
     preferredSource = "paste";
     canFollowPaste = words.length > 0;
     index = clamp(index, 0, Math.max(0, words.length - 1));
+
+    if (hasPaid && words.length) {
+      activeBookId = PASTE_LIBRARY_BOOK_ID;
+      schedulePersistPaidPasteToLibrary();
+    } else {
+      activeBookId = null;
+      if (hasPaid && preferredSource === "paste" && !words.length) {
+        cancelPaidPasteLibraryTimer();
+        void persistPaidPasteToLibraryNow();
+      }
+    }
+
     renderPasteMirror();
     renderCurrentWord();
     setButtonsEnabled(words.length > 0);
   }
 
   /** Debounced: free-tier word accounting only (does not block typing or word-pick UX). */
-  function commitPasteQuotaOnly() {
+  function commitPasteQuotaOnly(quotaRetry) {
     if (useFileCorpusBuffer) return;
-    const parsed = tokenizeWithPositionsRaw(textInput.value);
+    const parsed =
+      hasPaid && preferredSource === "paste"
+        ? tokenizeWithPositions(textInput.value)
+        : tokenizeWithPositionsRaw(textInput.value);
     const incoming = parsed.tokens.length;
     const delta = Math.max(0, incoming - lastCommittedTokenCount);
 
     if (!hasPaid && wordsUsed + delta > FREE_WORD_LIMIT) {
+      const maxW = getPasteWordHardCap();
+      const trimmed = trimTextareaToMaxWords(textInput.value, maxW);
+      if (trimmed.text !== textInput.value && !quotaRetry) {
+        textInput.value = trimmed.text;
+        syncPasteFromTextareaImmediate();
+        commitPasteQuotaOnly(true);
+        return;
+      }
       freeLimitBlocked = true;
       updateProgressPaywallUi();
       if (!limitModal.open) openLimitModal();
-      hint.textContent = "Free limit reached — reduce text or upgrade.";
+      hint.textContent = "Free limit reached — remove text from Source or upgrade to paste more.";
       return;
     }
 
     freeLimitBlocked = false;
-    wordsUsed += delta;
+    if (!hasPaid) {
+      wordsUsed += delta;
+    }
     lastCommittedTokenCount = incoming;
     saveLimitState();
     updateProgressPaywallUi();
@@ -881,7 +1026,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!showLibraryBody) {
       libraryList.innerHTML = "";
       libraryEmpty.hidden = false;
-      libraryEmpty.textContent = "Sign in from Account (top right) to see saved files.";
+      libraryEmpty.textContent =
+        "Sign in or create an account from Account (top right) to see saved files.";
       document.dispatchEvent(new CustomEvent("singleword-library-updated"));
       return;
     }
@@ -913,6 +1059,13 @@ document.addEventListener("DOMContentLoaded", () => {
       resumeBtn.textContent = "Resume";
       resumeBtn.setAttribute("data-lib-action", "resume");
       resumeBtn.setAttribute("data-lib-id", b.id);
+      const renameBtn = document.createElement("button");
+      renameBtn.type = "button";
+      renameBtn.className = "cta cta--ghost cta--small";
+      renameBtn.textContent = "Rename";
+      renameBtn.setAttribute("data-lib-action", "rename");
+      renameBtn.setAttribute("data-lib-id", b.id);
+      renameBtn.setAttribute("aria-label", `Rename ${b.filename || "item"}`);
       const removeBtn = document.createElement("button");
       removeBtn.type = "button";
       removeBtn.className = "cta cta--ghost cta--small";
@@ -920,6 +1073,7 @@ document.addEventListener("DOMContentLoaded", () => {
       removeBtn.setAttribute("data-lib-action", "remove");
       removeBtn.setAttribute("data-lib-id", b.id);
       actions.appendChild(resumeBtn);
+      actions.appendChild(renameBtn);
       actions.appendChild(removeBtn);
       card.appendChild(main);
       card.appendChild(actions);
@@ -948,7 +1102,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /**
    * Apply normalized text from a file load or library resume. Full text is stored in IndexedDB for resume.
-   * @param {{ resume?: boolean }} opts — resume skips free-tier word quota increment.
+   * @param {{ resume?: boolean, savedIndex?: number, bookId?: string }} opts — `bookId` keeps library key when resuming (e.g. paste slot vs content hash).
    */
   async function applyLoadedCorpus(sourceText, filename, opts = {}) {
     const resume = Boolean(opts.resume);
@@ -992,7 +1146,7 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error("Free limit reached.");
       }
       freeLimitBlocked = false;
-      wordsUsed += incoming;
+      if (!hasPaid) wordsUsed += incoming;
     }
 
     lastCommittedTokenCount = incoming;
@@ -1000,15 +1154,20 @@ document.addEventListener("DOMContentLoaded", () => {
     tokens = tokensBuilt;
     words = tokens.map((t) => t.word);
 
-    const fp = corpusFingerprint(sourceText);
+    const storeId =
+      typeof opts.bookId === "string" && opts.bookId.length > 0 ? opts.bookId : corpusFingerprint(sourceText);
+    let existingBook = null;
+    try {
+      existingBook = await idbGetBook(storeId);
+    } catch (_) {
+      /* ignore */
+    }
+
     let startIndex = 0;
     if (resume && opts && typeof opts.savedIndex === "number") {
       startIndex = clamp(opts.savedIndex, 0, Math.max(0, words.length - 1));
-    } else if (!resume) {
-      const existing = await idbGetBook(fp);
-      if (existing && typeof existing.savedIndex === "number") {
-        startIndex = clamp(existing.savedIndex, 0, Math.max(0, words.length - 1));
-      }
+    } else if (!resume && existingBook && typeof existingBook.savedIndex === "number") {
+      startIndex = clamp(existingBook.savedIndex, 0, Math.max(0, words.length - 1));
     }
 
     const useBuffer =
@@ -1032,18 +1191,24 @@ document.addEventListener("DOMContentLoaded", () => {
       canFollowPaste = words.length > 0;
     }
 
-    activeBookId = fp;
+    activeBookId = storeId;
     index = startIndex;
 
+    const defaultUploadName = (filename || "Uploaded file").trim().slice(0, LIBRARY_TITLE_MAX);
+    const mergedTitle =
+      existingBook && typeof existingBook.filename === "string" && existingBook.filename.trim()
+        ? existingBook.filename.trim().slice(0, LIBRARY_TITLE_MAX)
+        : defaultUploadName;
+
     await idbPutBook({
-      id: fp,
-      filename: filename || "Uploaded file",
+      id: storeId,
+      filename: mergedTitle,
       text: sourceText,
       wordCount: words.length,
       savedIndex: index,
       updatedAt: Date.now(),
     });
-    await pruneOldBooks(fp);
+    await pruneOldBooks(storeId);
 
     pause();
     renderCurrentWord();
@@ -1067,10 +1232,14 @@ document.addEventListener("DOMContentLoaded", () => {
       hint.textContent = "Could not open that book — try loading the file again.";
       return;
     }
-    preferredSource = "file";
+    preferredSource = bookId === PASTE_LIBRARY_BOOK_ID ? "paste" : "file";
     hint.textContent = "Opening saved book…";
     try {
-      await applyLoadedCorpus(rec.text, rec.filename, { resume: true, savedIndex: rec.savedIndex });
+      await applyLoadedCorpus(rec.text, rec.filename, {
+        resume: true,
+        savedIndex: rec.savedIndex,
+        bookId,
+      });
     } catch (err) {
       handleLoadError(err);
     }
@@ -1133,6 +1302,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function resetAll() {
     pause();
     cancelTextareaSync();
+    cancelPaidPasteLibraryTimer();
     words = [];
     tokens = [];
     index = 0;
@@ -1159,6 +1329,9 @@ document.addEventListener("DOMContentLoaded", () => {
     hint.textContent =
       "Paste or type text — the reader updates shortly after you edit. Choose a file above to load longer texts.";
     updateProgressPaywallUi();
+    if (hasPaid) {
+      void persistPaidPasteToLibraryNow();
+    }
   }
 
   libraryList.addEventListener("click", (e) => {
@@ -1169,6 +1342,30 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!id || !action) return;
     if (action === "resume") {
       resumeFromLibrary(id).catch(handleLoadError);
+    } else if (action === "rename") {
+      void (async () => {
+        try {
+          const rec = await idbGetBook(id);
+          if (!rec) return;
+          const current = String(rec.filename || "Untitled").slice(0, LIBRARY_TITLE_MAX);
+          const next = window.prompt("Name this item", current);
+          if (next == null) return;
+          const trimmed = next.trim().slice(0, LIBRARY_TITLE_MAX);
+          if (!trimmed) {
+            hint.textContent = "Name can't be empty.";
+            return;
+          }
+          rec.id = id;
+          rec.filename = trimmed;
+          rec.updatedAt = Date.now();
+          await idbPutBook(rec);
+          hint.textContent = "";
+          await renderLibrary();
+          document.dispatchEvent(new CustomEvent("singleword-library-updated"));
+        } catch (_) {
+          hint.textContent = "Could not rename.";
+        }
+      })();
     } else if (action === "remove") {
       idbDeleteBook(id).then(async () => {
         if (activeBookId === id) resetAll();
@@ -1186,7 +1383,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return renderLibrary();
       })
       .catch(() => {
-        hint.textContent = "Could not clear saved files.";
+        hint.textContent = "Could not delete files.";
       });
   });
 
@@ -1205,12 +1402,18 @@ document.addEventListener("DOMContentLoaded", () => {
   if (accountSignOutBtn) {
     accountSignOutBtn.addEventListener("click", () => signOutPreview());
   }
+  if (limitSignUpBtn) {
+    limitSignUpBtn.addEventListener("click", () => {
+      if (limitModal.open) limitModal.close();
+      window.location.href = "./login.html?return=app.html&mode=signup";
+    });
+  }
   limitPrimaryBtn.addEventListener("click", () => {
     if (!hasConnectedAccount) {
       if (limitModal.open) limitModal.close();
       openAccountMenuAndFocusSignIn();
       hint.textContent =
-        "Free limit: open Account (top right), enter email and password, then Sign in (preview).";
+        "Free limit: open Account (top right) to sign in or follow Create account (preview).";
       return;
     }
 
@@ -1244,6 +1447,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   progressBar.addEventListener("input", () => {
     if (!words.length) return;
+    if (isFreeTierLocked()) return;
     pause();
     index = clamp(Number(progressBar.value) || 0, 0, words.length - 1);
     renderCurrentWord();
@@ -1254,10 +1458,24 @@ document.addEventListener("DOMContentLoaded", () => {
     syncPasteFromTextareaImmediate();
     scheduleTextareaSync();
   });
+  textInput.addEventListener("paste", (e) => {
+    if (hasPaid || useFileCorpusBuffer) return;
+    if (getPasteWordHardCap() <= 0) {
+      e.preventDefault();
+      freeLimitBlocked = true;
+      updateProgressPaywallUi();
+      if (!limitModal.open) openLimitModal();
+      hint.textContent = `Free plan: no words left in the Source box (${FREE_WORD_LIMIT.toLocaleString()} total). Upgrade to paste more.`;
+    }
+  });
   textInput.addEventListener("blur", () => {
     if (textareaSyncTimer != null) {
       cancelTextareaSync();
       commitPasteQuotaOnly();
+    }
+    cancelPaidPasteLibraryTimer();
+    if (hasPaid && !useFileCorpusBuffer && preferredSource === "paste") {
+      void persistPaidPasteToLibraryNow();
     }
   });
   textInput.addEventListener("scroll", syncMirrorScroll);
@@ -1340,6 +1558,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("keydown", (e) => {
     if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
     if (!words.length) return;
+    if (isFreeTierLocked()) return;
     if (e.code === "Space") {
       e.preventDefault();
       togglePlayPause();

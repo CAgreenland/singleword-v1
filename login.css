@@ -14,27 +14,29 @@
   width: 100%;
   max-width: 400px;
   padding: clamp(24px, 5vw, 32px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(12, 12, 14, 0.85);
+  border-radius: 22px;
+  border: 1px solid rgba(78, 255, 138, 0.28);
+  background: rgba(8, 16, 12, 0.88);
   backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+  box-shadow:
+    0 8px 40px rgba(0, 0, 0, 0.55),
+    0 0 48px -18px rgba(78, 255, 138, 0.15);
 }
 
 .login-title {
   margin: 0 0 8px;
-  font-family: "Playfair Display", Georgia, serif;
+  font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   font-size: clamp(1.5rem, 4vw, 1.85rem);
   font-weight: 700;
-  letter-spacing: -0.02em;
-  color: #fff;
+  letter-spacing: -0.03em;
+  color: #e8fff0;
 }
 
 .login-lead {
   margin: 0 0 20px;
   font-size: 0.8125rem;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(107, 154, 122, 0.95);
 }
 
 .login-field {
@@ -46,31 +48,31 @@
   margin-bottom: 6px;
   font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(78, 255, 138, 0.55);
 }
 
 .login-input {
   box-sizing: border-box;
   width: 100%;
   padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(78, 255, 138, 0.22);
+  background: rgba(0, 0, 0, 0.4);
+  color: #e8fff0;
   font-family: inherit;
   font-size: 0.875rem;
   outline: none;
 }
 
 .login-input::placeholder {
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(74, 107, 85, 0.9);
 }
 
 .login-input:focus {
-  border-color: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
+  border-color: rgba(78, 255, 138, 0.45);
+  box-shadow: 0 0 0 3px rgba(78, 255, 138, 0.08);
 }
 
 .login-status {
@@ -91,19 +93,24 @@
   appearance: none;
   width: 100%;
   padding: 12px 18px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.96);
-  color: #14141f;
+  border-radius: 9999px;
+  border: 1px solid #4eff8a;
+  background: #4eff8a;
+  color: #050505;
   font-family: inherit;
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 2px 16px -4px rgba(78, 255, 138, 0.45),
+    0 0 28px -8px rgba(78, 255, 138, 0.25);
 }
 
 .login-submit:hover {
-  background: #fff;
+  background: #6effa3;
+  border-color: #6effa3;
 }
 
 .login-submit:disabled {
@@ -117,7 +124,7 @@
   font: inherit;
   font-size: 0.8125rem;
   font-weight: 500;
-  color: #c8c8ff;
+  color: rgba(78, 255, 138, 0.75);
   background: none;
   border: none;
   cursor: pointer;
@@ -126,18 +133,46 @@
 }
 
 .login-forgot:hover {
-  color: #e0e0ff;
+  color: #6effa3;
+}
+
+.login-mode-switch {
+  margin: 16px 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: rgba(107, 154, 122, 0.95);
+  text-align: center;
+}
+
+.login-mode-link {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  color: #6effa3;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.login-mode-link:hover {
+  color: #8effb8;
 }
 
 .landing__login-back {
-  font-size: 0.8125rem;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.75rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.75);
+  letter-spacing: 0.04em;
+  color: rgba(78, 255, 138, 0.65);
   text-decoration: none;
 }
 
 .landing__login-back:hover {
-  color: #fff;
+  color: #4eff8a;
   text-decoration: underline;
 }
 
@@ -154,6 +189,18 @@ html[data-theme="light"] .login-title {
 html[data-theme="light"] .login-lead,
 html[data-theme="light"] .login-status {
   color: #555;
+}
+
+html[data-theme="light"] .login-mode-switch {
+  color: #555;
+}
+
+html[data-theme="light"] .login-mode-link {
+  color: #0d6b3a;
+}
+
+html[data-theme="light"] .login-mode-link:hover {
+  color: #0a5230;
 }
 
 html[data-theme="light"] .login-label {

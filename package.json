@@ -1,0 +1,16 @@
+{
+  "name": "singleword",
+  "private": true,
+  "scripts": {
+    "setup": "npm install && npm install --prefix server",
+    "dev": "npm run dev --prefix server",
+    "start": "npm run start --prefix server",
+    "install:server": "npm install --prefix server",
+    "app": "serve . -l 5173",
+    "fullstack": "concurrently -k -n web,api -c cyan,magenta \"npm run app\" \"npm run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "serve": "^14.2.4"
+  }
+}

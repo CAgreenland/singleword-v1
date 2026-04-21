@@ -37,6 +37,26 @@
     });
   }
 
+  async function idbGetBook(id) {
+    const db = await openIdb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, "readonly");
+      const r = tx.objectStore(IDB_STORE).get(id);
+      r.onsuccess = () => resolve(r.result);
+      r.onerror = () => reject(r.error);
+    });
+  }
+
+  async function idbPutBook(record) {
+    const db = await openIdb();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(IDB_STORE, "readwrite");
+      tx.objectStore(IDB_STORE).put(record);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
   async function idbDeleteBook(id) {
     const db = await openIdb();
     return new Promise((resolve, reject) => {
@@ -46,6 +66,8 @@
       tx.onerror = () => reject(tx.error);
     });
   }
+
+  const LIBRARY_TITLE_MAX = 120;
 
   const ALLOWED_BG = new Set([
     "space",
@@ -164,12 +186,18 @@
         resumeBtn.className = "user-menu__btn";
         resumeBtn.textContent = "Resume";
         resumeBtn.dataset.resumeId = b.id;
+        const renameBtn = document.createElement("button");
+        renameBtn.type = "button";
+        renameBtn.className = "user-menu__btn user-menu__btn--ghost";
+        renameBtn.textContent = "Rename";
+        renameBtn.dataset.renameId = b.id;
         const removeBtn = document.createElement("button");
         removeBtn.type = "button";
         removeBtn.className = "user-menu__btn user-menu__btn--ghost";
         removeBtn.textContent = "Remove";
         removeBtn.dataset.removeId = b.id;
         actions.appendChild(resumeBtn);
+        actions.appendChild(renameBtn);
         actions.appendChild(removeBtn);
         item.appendChild(actions);
       }
@@ -198,6 +226,28 @@
             /* handled in app */
           }
           closeMenu(menuRoot);
+        }
+        return;
+      }
+      const renameBtn = e.target.closest("button[data-rename-id]");
+      if (renameBtn) {
+        const id = renameBtn.getAttribute("data-rename-id");
+        if (!id) return;
+        try {
+          const rec = await idbGetBook(id);
+          if (!rec) return;
+          const current = String(rec.filename || "Untitled").slice(0, LIBRARY_TITLE_MAX);
+          const next = window.prompt("Name this item", current);
+          if (next == null) return;
+          const trimmed = next.trim().slice(0, LIBRARY_TITLE_MAX);
+          if (!trimmed) return;
+          rec.id = id;
+          rec.filename = trimmed;
+          rec.updatedAt = Date.now();
+          await idbPutBook(rec);
+          document.dispatchEvent(new CustomEvent("singleword-library-updated"));
+        } catch (_) {
+          /* ignore */
         }
         return;
       }

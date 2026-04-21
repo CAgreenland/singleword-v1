@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./space-bg.css" />
@@ -25,7 +25,7 @@
 
     <div class="app">
       <header class="nav">
-        <a class="nav__logo" href="./index.html">Single word</a>
+        <a class="nav__logo" href="./index.html">single word</a>
         <div class="nav__end">
           <nav class="nav__links" aria-label="Site">
             <a class="nav__link" href="./index.html">Home</a>
@@ -82,6 +82,10 @@
                     <button id="settingsConnectBtn" type="submit" class="user-menu__btn user-menu__btn--signin">Sign in</button>
                     <button id="accountForgotBtn" type="button" class="user-menu__forgot">Forgot password?</button>
                   </div>
+                  <p class="user-menu__hint user-menu__hint--account" style="margin-top: 10px">
+                    <a class="user-menu__link" href="./login.html?return=app.html&amp;mode=signup">Create account</a>
+                    <span class="user-menu__hint-dim"> — email &amp; password (same as sign in)</span>
+                  </p>
                 </form>
                 <div id="accountSignedIn" class="user-menu__signed-in" hidden>
                   <p id="accountSignedInSummary" class="user-menu__hint"></p>
@@ -137,7 +141,10 @@
 
       <main class="main">
         <!-- Reader stage — focal point of the app -->
-        <section class="reader-card" aria-label="Reader stage">
+        <section class="reader-card board-tile board-tile--dark" aria-label="Reader stage">
+          <header class="board-tile__meta">
+            <span class="board-tile__meta-left">single word</span>
+          </header>
           <div class="reader__stage">
             <div class="reader__lines" aria-hidden="true">
               <div class="reader__line reader__line--top"></div>
@@ -178,8 +185,12 @@
         <!-- Sidebar-style panels below -->
         <div class="panels">
           <!-- Source panel -->
-          <section class="panel" aria-label="Text source">
+          <section class="panel board-tile board-tile--dark" aria-label="Text source">
+            <header class="board-tile__meta">
+              <span class="board-tile__meta-left">SOURCE</span>
+            </header>
             <header class="panel__header">
+              <p class="panel__kicker">Text input</p>
               <h2 class="panel__title">Source</h2>
               <p class="panel__subtitle">Paste to load instantly, or upload a file</p>
             </header>
@@ -187,7 +198,7 @@
               <div class="field">
                 <label class="field__label" for="textInput">Text</label>
                 <p class="field__hint field__hint--tight">
-                  Paste or type up to <strong>2,000 words</strong> in this box (testing limit). For longer texts choose a file
+                  Paste or type up to <strong>1,000 words</strong> in this box at a time. For longer texts choose a file
                   below. The reader syncs shortly after you edit. Click a word to jump.
                 </p>
                 <div class="field__textarea-wrap">
@@ -218,8 +229,12 @@
           </section>
 
           <!-- Library: saved uploads on this device -->
-          <section id="library-panel" class="panel" aria-label="Your library">
+          <section id="library-panel" class="panel board-tile board-tile--dark" aria-label="Your library">
+            <header class="board-tile__meta">
+              <span class="board-tile__meta-left">LIBRARY</span>
+            </header>
             <header class="panel__header">
+              <p class="panel__kicker">Saved on this device</p>
               <h2 class="panel__title">Your library</h2>
               <p class="panel__subtitle">
                 Each file you choose is saved on this device (your library) and stays in sync with Account → Saved books.
@@ -237,15 +252,19 @@
                   No saved books yet. Choose a file above — it loads automatically and your place is saved in your library.
                 </p>
                 <div class="panel__actions panel__actions--library">
-                  <button id="clearLibraryBtn" type="button" class="cta cta--ghost">Clear saved files</button>
+                  <button id="clearLibraryBtn" type="button" class="cta cta--ghost">Delete files</button>
                 </div>
               </div>
             </div>
           </section>
 
           <!-- Settings panel -->
-          <section class="panel" aria-label="Settings">
+          <section class="panel board-tile board-tile--dark" aria-label="Settings">
+            <header class="board-tile__meta">
+              <span class="board-tile__meta-left">SETTINGS</span>
+            </header>
             <header class="panel__header">
+              <p class="panel__kicker">Reader controls</p>
               <h2 class="panel__title">Reading settings</h2>
               <p class="panel__subtitle">Speed, size, and pivot color</p>
             </header>
@@ -282,7 +301,7 @@
       </main>
 
       <footer class="foot">
-        <span class="foot__brand">Single word</span>
+        <span class="foot__brand">single word</span>
         <span class="foot__shortcut"><kbd>Space</kbd> play / pause &middot; <kbd>&larr;</kbd> <kbd>&rarr;</kbd> step</span>
       </footer>
     </div>
@@ -307,10 +326,11 @@
         <p class="paywall-modal__kicker">Free limit reached</p>
         <h2 id="limitTitle" class="paywall-modal__title">Sign in to continue</h2>
         <p id="limitMessage" class="paywall-modal__text">
-          You used your free quota. Open Account (top right) and sign in with email and password (preview).
+          You used your free quota. Sign in or create an account (email and password — preview on this device).
         </p>
         <div class="paywall-modal__actions">
           <button id="limitPrimaryBtn" type="button" class="cta">Sign in</button>
+          <button id="limitSignUpBtn" type="button" class="cta cta--ghost">Create account</button>
           <button type="submit" class="cta cta--ghost">Close</button>
         </div>
       </form>

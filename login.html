@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./space-bg.css" />
@@ -26,47 +26,110 @@
     <div class="landing">
       <div class="landing__inner">
         <header class="landing__nav">
-          <a href="./index.html" class="landing__logo">Single word</a>
+          <div class="landing__nav-brand">
+            <a href="./index.html" class="landing__logo">single word</a>
+            <span class="landing__nav-meta" aria-hidden="true">V1.0 · SW</span>
+          </div>
           <a id="loginBackLink" class="landing__login-back" href="./index.html">← Previous page</a>
         </header>
 
         <main class="login-main">
           <div class="login-card">
-            <h1 class="login-title">Sign in</h1>
-            <p class="login-lead">Preview sign-in — stored on this device only. After signing in you’ll go to the reader.</p>
+            <h1 class="login-title" id="loginCardTitle">Sign in</h1>
+            <p class="login-lead" id="loginCardLead">
+              Use email and password (preview — stored on this device only). After signing in you’ll go to the reader.
+            </p>
 
-            <form id="loginForm" novalidate>
-              <div class="login-field">
-                <label class="login-label" for="loginEmail">Email</label>
-                <input
-                  id="loginEmail"
-                  class="login-input"
-                  type="email"
-                  name="email"
-                  autocomplete="username"
-                  inputmode="email"
-                  placeholder="you@example.com"
-                  required
-                />
-              </div>
-              <div class="login-field">
-                <label class="login-label" for="loginPassword">Password</label>
-                <input
-                  id="loginPassword"
-                  class="login-input"
-                  type="password"
-                  name="password"
-                  autocomplete="current-password"
-                  placeholder="••••••••"
-                  required
-                />
-              </div>
-              <p id="loginStatus" class="login-status" role="status"></p>
-              <div class="login-actions">
-                <button id="loginSubmit" type="submit" class="login-submit">Sign in</button>
-                <button id="loginForgotBtn" type="button" class="login-forgot">Forgot password?</button>
-              </div>
-            </form>
+            <div id="loginPanelSignIn">
+              <form id="loginForm" novalidate>
+                <div class="login-field">
+                  <label class="login-label" for="loginEmail">Email</label>
+                  <input
+                    id="loginEmail"
+                    class="login-input"
+                    type="email"
+                    name="email"
+                    autocomplete="username"
+                    inputmode="email"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+                <div class="login-field">
+                  <label class="login-label" for="loginPassword">Password</label>
+                  <input
+                    id="loginPassword"
+                    class="login-input"
+                    type="password"
+                    name="password"
+                    autocomplete="current-password"
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+                <p id="loginStatus" class="login-status" role="status"></p>
+                <div class="login-actions">
+                  <button id="loginSubmit" type="submit" class="login-submit">Sign in</button>
+                  <button id="loginForgotBtn" type="button" class="login-forgot">Forgot password?</button>
+                </div>
+              </form>
+              <p class="login-mode-switch">
+                New here?
+                <button type="button" class="login-mode-link" id="showSignUpBtn">Create an account</button>
+              </p>
+            </div>
+
+            <div id="loginPanelSignUp" hidden>
+              <form id="signUpForm" novalidate>
+                <div class="login-field">
+                  <label class="login-label" for="signUpEmail">Email</label>
+                  <input
+                    id="signUpEmail"
+                    class="login-input"
+                    type="email"
+                    name="email"
+                    autocomplete="email"
+                    inputmode="email"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+                <div class="login-field">
+                  <label class="login-label" for="signUpPassword">Password</label>
+                  <input
+                    id="signUpPassword"
+                    class="login-input"
+                    type="password"
+                    name="password"
+                    autocomplete="new-password"
+                    placeholder="At least 8 characters"
+                    minlength="8"
+                    required
+                  />
+                </div>
+                <div class="login-field">
+                  <label class="login-label" for="signUpPasswordConfirm">Confirm password</label>
+                  <input
+                    id="signUpPasswordConfirm"
+                    class="login-input"
+                    type="password"
+                    name="password-confirm"
+                    autocomplete="new-password"
+                    placeholder="Repeat password"
+                    minlength="8"
+                    required
+                  />
+                </div>
+                <p id="signUpStatus" class="login-status" role="status"></p>
+                <div class="login-actions">
+                  <button id="signUpSubmit" type="submit" class="login-submit">Create account</button>
+                </div>
+              </form>
+              <p class="login-mode-switch">
+                Already have an account?
+                <button type="button" class="login-mode-link" id="showSignInBtn">Sign in</button>
+              </p>
+            </div>
 
             <div id="loginAlreadySignedIn" class="login-lead" hidden style="margin-top: 8px">
               <p style="margin: 0 0 16px">You’re already signed in on this device.</p>
