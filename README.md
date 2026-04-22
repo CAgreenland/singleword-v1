@@ -58,7 +58,8 @@ Documentación de endpoints: **`server/README.md`**.
 
 ## Despliegue (notas)
 
-- **Vercel / Netlify / similar:** sirve la raíz como sitio estático (sin build obligatorio). La carpeta **`server/`** no es estática; despliégala aparte (Railway, Render, Fly.io, VPS) si necesitas la API en producción.
+- **Vercel:** en “New Project” deja **Framework Preset → Other**, **Root Directory → `./`**. Con el **`vercel.json`** del repo: **Build** vacío y **Output** en la raíz (sitio estático). No hace falta desplegar `server/` aquí; la API va en otro servicio si la usas.
+- **Netlify / similar:** mismo criterio: publicar la raíz como estático, sin build.
 - **Supabase / auth real:** integra después; el login actual es preview con `localStorage`.
 - **Lemon Squeezy:** configura el webhook apuntando a tu API pública y `LEMONSQUEEZY_WEBHOOK_SECRET` en `.env` del servidor. Ver `server/README.md`.
 
