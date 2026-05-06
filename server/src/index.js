@@ -13,6 +13,13 @@ import {
   extractSubscriptionRow,
   subscriptionIsPaidLike,
 } from "./lemonsqueezy.js";
+import { verifySupabaseAccessToken } from "./supabaseJwt.js";
+import { getSupabaseAdmin } from "./supabaseAdmin.js";
+import {
+  fetchProfileEntitlementByUserId,
+  fetchProfileIdByEmail,
+  updateProfileBillingByUserId,
+} from "./supabaseProfiles.js";
 
 const PORT = Number(process.env.PORT || 3847);
 const WEBHOOK_SECRET = process.env.LEMONSQUEEZY_WEBHOOK_SECRET || "";
@@ -94,6 +101,74 @@ function effectiveEntitlement(email) {
   };
 }
 
+/** Fase 3: test (SQLite) > Supabase profiles.paid > Lemon (SQLite). */
+async function effectiveEntitlementForSession({ email, userId }) {
+  const norm = email.trim().toLowerCase();
+  const test = getTestEntitlement(norm);
+  if (test && test.paid === 1) {
+    return {
+      email: norm,
+      paid: true,
+      source: "test",
+      updated_at: test.updated_at,
+    };
+  }
+
+  let profileRow = null;
+  const admin = getSupabaseAdmin();
+  if (admin && userId) {
+    try {
+      profileRow = await fetchProfileEntitlementByUserId(admin, userId);
+    } catch (e) {
+      console.error("[entitlement] supabase profiles read failed:", e.message || e);
+    }
+  }
+
+  if (profileRow?.paid === true) {
+    return {
+      email: norm,
+      paid: true,
+      source: "supabase",
+      plan: profileRow.plan,
+      paid_until: profileRow.paid_until,
+      updated_at: profileRow.updated_at,
+    };
+  }
+
+  const sub = getSubscriptionByEmail(norm);
+  if (sub && subscriptionIsPaidLike(sub.status)) {
+    return {
+      email: sub.user_email || norm,
+      paid: true,
+      source: "lemonsqueezy",
+      status: sub.status,
+      renews_at: sub.renews_at,
+      ends_at: sub.ends_at,
+      ls_subscription_id: sub.ls_subscription_id,
+      updated_at: sub.updated_at,
+    };
+  }
+
+  const source = profileRow ? "supabase" : test ? "test" : sub ? "lemonsqueezy" : "none";
+  return {
+    email: norm,
+    paid: false,
+    source,
+    ...(profileRow && {
+      plan: profileRow.plan,
+      paid_until: profileRow.paid_until,
+      updated_at: profileRow.updated_at,
+    }),
+    ...(sub && {
+      subscription_status: sub.status,
+      renews_at: sub.renews_at,
+      ends_at: sub.ends_at,
+      ls_subscription_id: sub.ls_subscription_id,
+      updated_at: sub.updated_at,
+    }),
+  };
+}
+
 app.get("/api/health", (_req, res) => {
   res.json({
     ok: true,
@@ -130,19 +205,64 @@ app.get("/api/entitlement", (req, res) => {
   return res.json(effectiveEntitlement(email));
 });
 
+/**
+ * Paid/free for the signed-in Supabase user (Fase 2).
+ * Auth: Authorization: Bearer <Supabase access_token>
+ */
+app.get("/api/me/entitlement", async (req, res) => {
+  const auth = req.get("Authorization") || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
+  if (!token) {
+    return res.status(401).json({ error: "Missing Authorization: Bearer <access_token>" });
+  }
+  let email;
+  let sub;
+  try {
+    ({ email, sub } = await verifySupabaseAccessToken(token));
+  } catch (e) {
+    if (e && e.code === "missing_secret") {
+      return res.status(503).json({
+        error: "Server not configured",
+        hint: "Set SUPABASE_JWT_SECRET in server/.env (Supabase → Project Settings → JWT Keys).",
+      });
+    }
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
+  if (!email) {
+    return res.status(422).json({ error: "Token has no email; sign in with email/password or ensure provider returns email." });
+  }
+  return res.json(await effectiveEntitlementForSession({ email, userId: sub }));
+});
+
 /** Set test paid/free (does not touch Lemon Squeezy data). */
-app.post("/api/dev/entitlement", requireDevKey, (req, res) => {
+app.post("/api/dev/entitlement", requireDevKey, async (req, res) => {
   const email = typeof req.body?.email === "string" ? req.body.email : "";
   const paid = Boolean(req.body?.paid);
   if (!email.trim()) {
     return res.status(400).json({ error: "Body must include { \"email\": \"...\", \"paid\": true|false }" });
   }
   setTestEntitlement(email, paid);
+  const norm = email.trim().toLowerCase();
+  const admin = getSupabaseAdmin();
+  let supabaseSynced = false;
+  if (admin) {
+    try {
+      const profileId = await fetchProfileIdByEmail(admin, norm);
+      if (profileId) {
+        await updateProfileBillingByUserId(admin, profileId, { paid, plan: paid ? "pro" : "free" });
+        supabaseSynced = true;
+      }
+    } catch (e) {
+      console.error("[dev entitlement] supabase profiles update failed:", e.message || e);
+    }
+  }
   return res.json({
     ok: true,
-    email: email.trim().toLowerCase(),
+    email: norm,
     paid,
-    note: "Stored in test_entitlements. Lemon Squeezy webhooks still apply if you add them later.",
+    note: supabaseSynced
+      ? "Stored in test_entitlements and synced to Supabase profiles (Fase 3)."
+      : "Stored in test_entitlements. Set SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY to also sync profiles in Supabase.",
   });
 });
 
@@ -211,6 +331,7 @@ const server = app.listen(PORT, () => {
   console.log(`Single Word API (test mode) — http://127.0.0.1:${PORT}`);
   console.log(`  GET  /api/health`);
   console.log(`  GET  /api/entitlement?email=…`);
+  console.log(`  GET  /api/me/entitlement  (Bearer Supabase access_token)`);
   console.log(`  POST /api/dev/entitlement  (needs DEV_API_KEY)`);
   console.log(`  DELETE /api/dev/entitlement?email=…`);
   if (WEBHOOK_SECRET) {

@@ -271,7 +271,57 @@ function isLikelyTextFile(ext) {
 const PLAY_SVG = '<polygon points="9 6.5 17 12 9 17.5 9 6.5"/>';
 const PAUSE_SVG = '<rect x="7" y="5" width="4" height="14" rx="1"/><rect x="13" y="5" width="4" height="14" rx="1"/>';
 
-document.addEventListener("DOMContentLoaded", () => {
+async function restoreSupabaseSessionToLegacyLocals() {
+  if (typeof window.createSwSupabaseClient !== "function") return;
+  const client = window.createSwSupabaseClient();
+  if (!client) return;
+  try {
+    const {
+      data: { session },
+    } = await client.auth.getSession();
+    if (session?.user?.email) {
+      localStorage.setItem("singlewordSessionEmail", session.user.email);
+      localStorage.setItem("singlewordConnectedAccount", "1");
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+/** Fase 2: sync paid flag from API using Supabase session (requires SINGLEWORD_API_URL in supabase-config.js). */
+async function syncEntitlementFromApi() {
+  const mistaken =
+    typeof window.__SUPABASE_SINGLEWORD_API_URL === "string"
+      ? window.__SUPABASE_SINGLEWORD_API_URL
+      : "";
+  const primary = typeof window.__SINGLEWORD_API_URL === "string" ? window.__SINGLEWORD_API_URL : "";
+  const raw = (primary || mistaken).trim().replace(/\/+$/, "");
+  if (!raw) return;
+  if (typeof window.createSwSupabaseClient !== "function") return;
+  const client = window.createSwSupabaseClient();
+  if (!client) return;
+  try {
+    const {
+      data: { session },
+    } = await client.auth.getSession();
+    const token = session?.access_token;
+    if (!token) return;
+    const res = await fetch(`${raw}/api/me/entitlement`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return;
+    const body = await res.json();
+    if (typeof body.paid === "boolean") {
+      localStorage.setItem("singlewordPaid", body.paid ? "1" : "0");
+    }
+  } catch {
+    /* ignore — offline or API down keeps last localStorage value */
+  }
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await restoreSupabaseSessionToLegacyLocals();
+  await syncEntitlementFromApi();
   const textInput = byId("textInput");
   const textMirror = byId("textMirror");
   const fileInput = byId("fileInput");

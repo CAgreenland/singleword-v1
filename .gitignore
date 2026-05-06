@@ -6,6 +6,9 @@ node_modules/
 .env.local
 *.local
 
+# Generated at build (Vercel / npm run build); may hold anon URL — still do not commit if you fill manually
+supabase-config.js
+
 # Server / runtime
 server/data/
 *.log

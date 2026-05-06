@@ -75,6 +75,21 @@
   box-shadow: 0 0 0 3px rgba(78, 255, 138, 0.08);
 }
 
+.login-hint {
+  margin: 8px 2px 0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.login-hint--ok {
+  color: #6effa3;
+}
+
+.login-hint--error {
+  color: #ff8a8a;
+}
+
 .login-status {
   margin: 0 0 14px;
   font-size: 0.75rem;
@@ -162,6 +177,44 @@
   color: #8effb8;
 }
 
+.login-social {
+  margin-top: 12px;
+}
+
+.login-social__label {
+  margin: 0 0 8px;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(107, 154, 122, 0.95);
+}
+
+.login-social__buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.login-social__btn {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 9999px;
+  border: 1px solid rgba(78, 255, 138, 0.4);
+  background: rgba(10, 20, 14, 0.85);
+  color: #d9ffe8;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.login-social__btn:hover {
+  border-color: #6effa3;
+  background: rgba(18, 36, 24, 0.95);
+}
+
 .landing__login-back {
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
   font-size: 0.75rem;
@@ -203,6 +256,18 @@ html[data-theme="light"] .login-mode-link:hover {
   color: #0a5230;
 }
 
+html[data-theme="light"] .login-hint {
+  color: #666;
+}
+
+html[data-theme="light"] .login-hint--ok {
+  color: #0d6b3a;
+}
+
+html[data-theme="light"] .login-hint--error {
+  color: #bf2e2e;
+}
+
 html[data-theme="light"] .login-label {
   color: #666;
 }
@@ -220,6 +285,21 @@ html[data-theme="light"] .login-input:focus {
 
 html[data-theme="light"] .landing__login-back {
   color: #444;
+}
+
+html[data-theme="light"] .login-social__label {
+  color: #555;
+}
+
+html[data-theme="light"] .login-social__btn {
+  border-color: rgba(0, 0, 0, 0.22);
+  background: #f4f6f5;
+  color: #222;
+}
+
+html[data-theme="light"] .login-social__btn:hover {
+  border-color: rgba(0, 0, 0, 0.34);
+  background: #eef2ef;
 }
 
 html[data-theme="light"] .login-submit {

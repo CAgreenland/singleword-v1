@@ -68,7 +68,8 @@ curl -s -X DELETE "http://127.0.0.1:3847/api/dev/entitlement?email=you@example.c
 |--------|------|--------|
 | `GET` | `/api/health` | Alive check |
 | `GET` | `/api/entitlement?email=` | Current paid/free (test + optional LS) |
-| `POST` | `/api/dev/entitlement` | Set test `{ email, paid }` — needs `DEV_API_KEY` |
+| `GET` | `/api/me/entitlement` | Same payload for the **signed-in Supabase user** — send `Authorization: Bearer <access_token>`; requires `SUPABASE_JWT_SECRET` in `server/.env` |
+| `POST` | `/api/dev/entitlement` | Set test `{ email, paid }` — needs `DEV_API_KEY`; with **`SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`** also syncs **`profiles.paid`** (Fase 3) |
 | `DELETE` | `/api/dev/entitlement?email=` | Clear test row — needs `DEV_API_KEY` |
 | `POST` | `/api/webhooks/lemonsqueezy` | Only when `LEMONSQUEEZY_WEBHOOK_SECRET` is set |
 
@@ -86,6 +87,6 @@ curl -s -X DELETE "http://127.0.0.1:3847/api/dev/entitlement?email=you@example.c
 
 `GET /api/entitlement` treats the user as paid if **either** the test row says paid **or** the stored subscription status is active-like.
 
-## Wire the reader app (optional)
+## Wire the reader app
 
-The static app still uses `localStorage` for the preview. To drive it from this API later, add a small fetch to `GET /api/entitlement` after sign-in (with real auth, not a public dev key).
+The static reader calls **`GET /api/me/entitlement`** with the Supabase session (see repo **`docs/SUPABASE-FASE2.md`**). Fase 3 adds **`profiles.paid`** in Supabase — see **`docs/SUPABASE-FASE3.md`**.

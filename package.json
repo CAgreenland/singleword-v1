@@ -2,6 +2,8 @@
   "name": "singleword",
   "private": true,
   "scripts": {
+    "postinstall": "node scripts/ensure-supabase-config.mjs",
+    "build": "node scripts/write-supabase-config.mjs",
     "setup": "npm install && npm install --prefix server",
     "dev": "npm run dev --prefix server",
     "start": "npm run start --prefix server",
@@ -11,6 +13,7 @@
   },
   "devDependencies": {
     "concurrently": "^9.1.2",
+    "dotenv": "^16.4.7",
     "serve": "^14.2.4"
   }
 }

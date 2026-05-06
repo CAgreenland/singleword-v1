@@ -72,6 +72,12 @@
                   <button id="loginSubmit" type="submit" class="login-submit">Sign in</button>
                   <button id="loginForgotBtn" type="button" class="login-forgot">Forgot password?</button>
                 </div>
+                <div class="login-social" id="loginSocialActions" hidden>
+                  <p class="login-social__label">Or continue with</p>
+                  <div class="login-social__buttons">
+                    <button type="button" class="login-social__btn" id="loginGoogleBtn">Google</button>
+                  </div>
+                </div>
               </form>
               <p class="login-mode-switch">
                 New here?
@@ -119,6 +125,7 @@
                     minlength="8"
                     required
                   />
+                  <p id="signUpPasswordMatchHint" class="login-hint" role="status"></p>
                 </div>
                 <p id="signUpStatus" class="login-status" role="status"></p>
                 <div class="login-actions">
@@ -157,6 +164,9 @@
       </form>
     </dialog>
 
+    <script src="./supabase-config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
+    <script src="./js/sw-auth-supabase.js"></script>
     <script src="./user-settings.js" defer></script>
     <script src="./login.js" defer></script>
   </body>
